@@ -2,50 +2,58 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTC — Agente Liquidador v1.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GTC — Agente Liquidador</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0A0A0A;color:#F0F0F0;font-family:system-ui,sans-serif;min-height:100vh}
-.header{background:#141414;border-bottom:1px solid #C9A84C44;padding:16px 24px;display:flex;align-items:center;gap:14px}
-.logo{width:38px;height:38px;border-radius:50%;background:#C9A84C;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#0A0A0A;flex-shrink:0}
-.brand{font-size:15px;font-weight:700;color:#E8C96A;letter-spacing:1px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0A0A0A;color:#F0F0F0;font-family:system-ui,sans-serif;min-height:100vh;font-size:15px}
+.header{background:#141414;border-bottom:1px solid #C9A84C44;padding:14px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.logo{width:36px;height:36px;border-radius:50%;background:#C9A84C;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#0A0A0A;flex-shrink:0}
+.brand{font-size:14px;font-weight:700;color:#E8C96A;letter-spacing:1px}
 .sub{font-size:11px;color:#666}
-.wrap{max-width:620px;margin:0 auto;padding:24px 20px}
-.tabs{display:flex;gap:8px;margin-bottom:24px}
-.tab{padding:8px 20px;border-radius:8px;border:1px solid #333;background:transparent;color:#888;font-size:13px;cursor:pointer;transition:all .15s}
+.wrap{max-width:100%;padding:16px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{flex:1;padding:10px 6px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#888;font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit;-webkit-appearance:none;appearance:none}
 .tab.active{border-color:#C9A84C;background:#C9A84C18;color:#E8C96A;font-weight:600}
 .panel{display:none}.panel.active{display:block}
-.sec{font-size:11px;font-weight:600;color:#555;letter-spacing:1px;margin-bottom:12px;margin-top:24px}
-.lbl{font-size:12px;color:#999;margin-bottom:4px}
-.lbl span{color:#C9A84C;margin-left:8px;font-size:11px}
-input,select{display:block;width:100%;max-width:380px;background:#1C1C1C;border:1px solid #333;border-radius:6px;color:#F0F0F0;padding:8px 12px;font-size:14px;margin-bottom:14px;font-family:inherit;outline:none}
-input.sm,select.sm{max-width:200px}
-input.ro{background:#141414;border-color:#222;color:#666}
-input[type=checkbox]{width:16px;height:16px;display:inline;margin:0}
-.chk{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.chk label{font-size:13px;color:#999;cursor:pointer}
-.btn{width:100%;max-width:380px;padding:11px;background:#C9A84C;color:#000;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:20px}
-.err{color:#E07B39;font-size:13px;margin-bottom:16px}
-.result{background:#141414;border:1px solid #C9A84C44;border-radius:10px;padding:16px;max-width:500px}
+.sec{font-size:11px;font-weight:600;color:#555;letter-spacing:1px;margin-bottom:10px;margin-top:22px}
+.lbl{font-size:13px;color:#999;margin-bottom:5px}
+.lbl span{color:#C9A84C;margin-left:6px;font-size:11px}
+input,select{display:block;width:100%;background:#1C1C1C;border:1px solid #333;border-radius:8px;color:#F0F0F0;padding:11px 13px;font-size:15px;margin-bottom:14px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+input.sm,select.sm{max-width:180px}
+input.ro{background:#141414;border-color:#222;color:#555}
+.btn{width:100%;padding:14px;background:#C9A84C;color:#000;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:20px;font-family:inherit;-webkit-appearance:none;appearance:none;touch-action:manipulation}
+.btn:active{background:#b8943d}
+.err{color:#E07B39;font-size:13px;margin-bottom:16px;padding:10px;background:#E07B3915;border-radius:8px}
+.result{background:#141414;border:1px solid #C9A84C44;border-radius:12px;padding:16px}
 .res-title{font-size:13px;font-weight:600;color:#C9A84C;margin-bottom:10px}
-.divider{font-size:11px;font-weight:600;color:#C9A84C;letter-spacing:1px;margin-top:16px;margin-bottom:4px;padding-top:8px;border-top:1px solid #2A2A2A}
-.row{display:flex;justify-content:space-between;border-bottom:1px solid #222;padding:7px 0;font-size:13px}
-.row .l{color:#999}.row .r{color:#F0F0F0}
-.row.sub .l{color:#666;font-size:12px}.row.sub .r{font-size:12px}
-.total{display:flex;justify-content:space-between;padding:12px 0 2px;margin-top:4px}
-.total .l{color:#C9A84C;font-weight:600}
-.total .r{color:#E8C96A;font-weight:700;font-size:18px}
-.total2{display:flex;justify-content:space-between;padding:10px 0 2px;border-bottom:1px solid #2A2A2A}
+.divider{font-size:11px;font-weight:600;color:#C9A84C;letter-spacing:1px;margin-top:16px;margin-bottom:4px;padding-top:10px;border-top:1px solid #2A2A2A}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1E1E1E;padding:8px 0;font-size:13px;gap:8px}
+.row .l{color:#888;flex:1}.row .r{color:#F0F0F0;text-align:right;white-space:nowrap}
+.row.sub .l{color:#555;font-size:12px;padding-left:10px}.row.sub .r{font-size:12px;color:#888}
+.total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 2px;margin-top:4px}
+.total .l{color:#C9A84C;font-weight:600;font-size:14px}
+.total .r{color:#E8C96A;font-weight:700;font-size:20px}
+.total2{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #2A2A2A}
 .total2 .l{color:#C9A84C;font-weight:600;font-size:13px}
-.total2 .r{color:#E8C96A;font-weight:700;font-size:15px}
-.esc-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-.esc-card{background:#141414;border-radius:10px;padding:14px;flex:1 1 160px;min-width:160px}
-.esc-title{font-size:13px;font-weight:600;margin-bottom:10px}
-.esc-card input{max-width:100%;margin-bottom:10px}
-.esc-total{display:flex;justify-content:space-between;padding:10px 0 2px}
-.info-bar{font-size:12px;color:#888;margin-bottom:14px}
-.info-bar strong{color:#F0F0F0}
+.total2 .r{color:#E8C96A;font-weight:700;font-size:16px}
+.esc-grid{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.esc-card{background:#141414;border-radius:12px;padding:14px}
+.esc-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.esc-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 2px;margin-top:4px}
+.info-bar{font-size:12px;color:#777;margin-bottom:14px;line-height:1.6;background:#161616;padding:10px 12px;border-radius:8px;border:1px solid #252525}
+.info-bar strong{color:#E0E0E0}
+.tasa-grid{display:flex;gap:10px;margin-bottom:14px}
+.tasa-col{flex:1;min-width:0}
+.tasa-label{font-size:11px;margin-bottom:5px;font-weight:600}
+.tasa-col input{max-width:100%;margin-bottom:0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:14px;background:#161616;border-radius:8px;border:1px solid #2A2A2A;cursor:pointer;user-select:none;touch-action:manipulation}
+.toggle-row span{font-size:13px;color:#999;flex:1;line-height:1.4;margin-right:12px}
+.toggle{width:44px;height:26px;min-width:44px;background:#333;border-radius:13px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#C9A84C}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:21px}
 </style>
 </head>
 <body>
@@ -58,8 +66,8 @@ input[type=checkbox]{width:16px;height:16px;display:inline;margin:0}
 </div>
 <div class="wrap">
   <div class="tabs">
-    <button class="tab active" onclick="setTab('pre')">Preliquidacion</button>
-    <button class="tab" onclick="setTab('liq')">Liquidacion Final</button>
+    <button class="tab active" onclick="setTab('pre')">Preliquidación</button>
+    <button class="tab" onclick="setTab('liq')">Liquidación Final</button>
   </div>
 
   <!-- PRELIQUIDACION -->
@@ -67,24 +75,30 @@ input[type=checkbox]{width:16px;height:16px;display:inline;margin:0}
     <div class="lbl">Fondeador</div>
     <select id="p-fond" onchange="pOnFond()"><option value="">Seleccionar...</option></select>
     <div class="lbl">Valor facial ($)</div>
-    <input id="p-facial" placeholder="ej. 5200000000" oninput="pOnFacial()">
-    <div class="lbl" id="p-negoc-lbl">Valor de negociacion ($)</div>
-    <input id="p-negoc" placeholder="ej. 5200000000">
+    <input id="p-facial" inputmode="numeric" placeholder="ej. 5200000000" oninput="pOnFacial()">
+    <div class="lbl" id="p-negoc-lbl">Valor de negociación ($)</div>
+    <input id="p-negoc" inputmode="numeric" placeholder="ej. 5200000000">
     <div id="p-scb-wrap" style="display:none">
       <div class="lbl" id="p-scb-lbl">Costo SCB (%)</div>
-      <input id="p-scb" class="sm">
+      <input id="p-scb" class="sm" inputmode="decimal">
     </div>
     <div class="lbl">Plazo (meses)</div>
-    <input id="p-plazo" class="sm" placeholder="ej. 6">
-    <div style="margin-bottom:8px">
-      <div class="lbl" style="margin-bottom:6px">Tasas por escenario (%)</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <div><div style="font-size:11px;color:#4CAF50;margin-bottom:3px">Favorable</div><input id="p-t1" class="sm" value="1.8" style="max-width:90px;margin-bottom:0"></div>
-        <div><div style="font-size:11px;color:#C9A84C;margin-bottom:3px">Base</div><input id="p-t2" class="sm" value="2.0" style="max-width:90px;margin-bottom:0"></div>
-        <div><div style="font-size:11px;color:#E07B39;margin-bottom:3px">Conservador</div><input id="p-t3" class="sm" value="2.2" style="max-width:90px;margin-bottom:0"></div>
+    <input id="p-plazo" class="sm" inputmode="numeric" placeholder="ej. 6">
+    <div class="lbl" style="margin-bottom:8px">Tasas por escenario (%)</div>
+    <div class="tasa-grid">
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#4CAF50">Favorable</div>
+        <input id="p-t1" inputmode="decimal" value="1.8">
+      </div>
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#C9A84C">Base</div>
+        <input id="p-t2" inputmode="decimal" value="2.0">
+      </div>
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#E07B39">Conservador</div>
+        <input id="p-t3" inputmode="decimal" value="2.2">
       </div>
     </div>
-    <br>
     <button class="btn" onclick="calcPre()">Calcular escenarios</button>
     <div id="p-err" class="err" style="display:none"></div>
     <div id="p-result"></div>
@@ -96,17 +110,17 @@ input[type=checkbox]{width:16px;height:16px;display:inline;margin:0}
     <div class="lbl">Fondeador</div>
     <select id="l-fond" onchange="lOnFond()"><option value="">Seleccionar...</option></select>
     <div class="lbl">Valor facial GTC ($)</div>
-    <input id="l-facial" placeholder="ej. 5200000000" oninput="lOnFacial()">
-    <div class="lbl" id="l-negoc-lbl">Valor de negociacion ($)</div>
-    <input id="l-negoc" placeholder="ej. 5200000000">
+    <input id="l-facial" inputmode="numeric" placeholder="ej. 5200000000" oninput="lOnFacial()">
+    <div class="lbl" id="l-negoc-lbl">Valor de negociación ($)</div>
+    <input id="l-negoc" inputmode="numeric" placeholder="ej. 5200000000">
     <div id="l-scb-wrap" style="display:none">
       <div class="lbl" id="l-scb-lbl">Costo SCB (%)</div>
-      <input id="l-scb" class="sm">
+      <input id="l-scb" class="sm" inputmode="decimal">
     </div>
     <div class="lbl">Tasa mensual real de subasta (%)</div>
-    <input id="l-tasa" placeholder="ej. 1.8">
+    <input id="l-tasa" inputmode="decimal" placeholder="ej. 1.8">
     <div class="lbl">Plazo (meses)</div>
-    <input id="l-plazo" class="sm" placeholder="ej. 6">
+    <input id="l-plazo" class="sm" inputmode="numeric" placeholder="ej. 6">
 
     <div class="sec">DATOS DEL CLIENTE</div>
     <div class="lbl">IVA aplicable (%)</div>
@@ -128,14 +142,16 @@ input[type=checkbox]{width:16px;height:16px;display:inline;margin:0}
       <option value="2.5">2.5%</option>
       <option value="0">0%</option>
     </select>
-    <div class="chk">
-      <input type="checkbox" id="l-bolsa" onchange="document.getElementById('l-rete').disabled=this.checked">
-      <label for="l-bolsa">Registro en bolsa — exento de retefuente</label>
+
+    <div class="toggle-row" onclick="toggleBolsa()">
+      <span>Registro en bolsa — exento de retefuente</span>
+      <div class="toggle" id="tog-bolsa"></div>
     </div>
-    <div class="chk">
-      <input type="checkbox" id="l-gmf">
-      <label for="l-gmf">GMF lo asume Global Trade Commerce</label>
+    <div class="toggle-row" onclick="toggleGmf()">
+      <span>GMF lo asume Global Trade Commerce</span>
+      <div class="toggle" id="tog-gmf"></div>
     </div>
+
     <button class="btn" onclick="calcLiq()">Liquidar</button>
     <div id="l-err" class="err" style="display:none"></div>
     <div id="l-result"></div>
@@ -154,192 +170,199 @@ var FONDS = {
   liquitech:{nombre:"Liquitech",           scb:0,    scbEdit:false, bolsa:false, reserva:10}
 };
 
-function cop(n){return "$ "+Math.round(n).toLocaleString("es-CO");}
-function pn(v){return parseFloat(String(v).trim());}
+var bolsaOn = false;
+var gmfOn = false;
 
-function populateFonds(){
-  var opts="<option value=''>Seleccionar...</option>";
-  Object.entries(FONDS).forEach(function(e){
-    opts+="<option value='"+e[0]+"'>"+e[1].nombre+"</option>";
+function toggleBolsa() {
+  bolsaOn = !bolsaOn;
+  document.getElementById("tog-bolsa").classList.toggle("on", bolsaOn);
+  document.getElementById("l-rete").disabled = bolsaOn;
+}
+
+function toggleGmf() {
+  gmfOn = !gmfOn;
+  document.getElementById("tog-gmf").classList.toggle("on", gmfOn);
+}
+
+function cop(n) { return "$\u00a0" + Math.round(n).toLocaleString("es-CO"); }
+function pn(v) { return parseFloat(String(v).trim()); }
+
+function populateFonds() {
+  var opts = "<option value=''>Seleccionar...</option>";
+  Object.entries(FONDS).forEach(function(e) {
+    opts += "<option value='" + e[0] + "'>" + e[1].nombre + "</option>";
   });
-  document.getElementById("p-fond").innerHTML=opts;
-  document.getElementById("l-fond").innerHTML=opts;
+  document.getElementById("p-fond").innerHTML = opts;
+  document.getElementById("l-fond").innerHTML = opts;
 }
 
-function setTab(t){
-  document.querySelectorAll(".tab").forEach(function(b,i){b.classList.toggle("active",["pre","liq"][i]===t);});
-  document.getElementById("panel-pre").classList.toggle("active",t==="pre");
-  document.getElementById("panel-liq").classList.toggle("active",t==="liq");
+function setTab(t) {
+  var tabs = document.querySelectorAll(".tab");
+  tabs[0].classList.toggle("active", t === "pre");
+  tabs[1].classList.toggle("active", t === "liq");
+  document.getElementById("panel-pre").classList.toggle("active", t === "pre");
+  document.getElementById("panel-liq").classList.toggle("active", t === "liq");
+  window.scrollTo(0, 0);
 }
 
-function setupFond(prefix, id){
-  var f=FONDS[id];
-  var negocLbl=document.getElementById(prefix+"-negoc-lbl");
-  var negocIn=document.getElementById(prefix+"-negoc");
-  var scbWrap=document.getElementById(prefix+"-scb-wrap");
-  var scbIn=document.getElementById(prefix+"-scb");
-  var scbLbl=document.getElementById(prefix+"-scb-lbl");
-  if(!f){scbWrap.style.display="none";negocIn.readOnly=false;negocIn.className="";return;}
-  if(f.reserva>0){
-    negocLbl.innerHTML='Valor de negociacion ($) <span>auto — reserva '+f.reserva+'%</span>';
-    negocIn.readOnly=true; negocIn.className="ro";
+function setupFond(px, id) {
+  var f = FONDS[id];
+  var nLbl = document.getElementById(px + "-negoc-lbl");
+  var nIn = document.getElementById(px + "-negoc");
+  var sWrap = document.getElementById(px + "-scb-wrap");
+  var sIn = document.getElementById(px + "-scb");
+  var sLbl = document.getElementById(px + "-scb-lbl");
+  if (!f) { sWrap.style.display = "none"; nIn.readOnly = false; nIn.className = ""; return; }
+  if (f.reserva > 0) {
+    nLbl.innerHTML = 'Valor de negociación ($) <span>auto — reserva ' + f.reserva + '%</span>';
+    nIn.readOnly = true; nIn.className = "ro";
   } else {
-    negocLbl.innerHTML='Valor de negociacion ($)';
-    negocIn.readOnly=false; negocIn.className="";
+    nLbl.innerHTML = 'Valor de negociación ($)';
+    nIn.readOnly = false; nIn.className = "";
   }
-  if(f.bolsa){
-    scbWrap.style.display="block";
-    scbIn.value=String(f.scb);
-    scbIn.readOnly=!f.scbEdit;
-    scbIn.className=f.scbEdit?"sm":"sm ro";
-    scbLbl.innerHTML='Costo SCB (%)'+(!f.scbEdit?' <span style="color:#666">fijo</span>':"");
+  if (f.bolsa) {
+    sWrap.style.display = "block";
+    sIn.value = String(f.scb);
+    sIn.readOnly = !f.scbEdit;
+    sIn.className = f.scbEdit ? "sm" : "sm ro";
+    sLbl.innerHTML = 'Costo SCB (%)' + (!f.scbEdit ? ' <span style="color:#555">fijo</span>' : "");
   } else {
-    scbWrap.style.display="none";
+    sWrap.style.display = "none";
   }
 }
 
-function pOnFond(){
-  var id=document.getElementById("p-fond").value;
-  setupFond("p",id);
-  document.getElementById("p-negoc").value="";
-  document.getElementById("p-result").innerHTML="";
+function pOnFond() {
+  setupFond("p", document.getElementById("p-fond").value);
+  document.getElementById("p-negoc").value = "";
+  document.getElementById("p-result").innerHTML = "";
 }
-function pOnFacial(){
-  var id=document.getElementById("p-fond").value;
-  var f=FONDS[id];
-  if(f&&f.reserva>0){
-    var vf=pn(document.getElementById("p-facial").value);
-    if(!isNaN(vf)) document.getElementById("p-negoc").value=String(Math.round(vf*(1-f.reserva/100)));
-  }
-}
-function lOnFond(){
-  var id=document.getElementById("l-fond").value;
-  setupFond("l",id);
-  document.getElementById("l-negoc").value="";
-  document.getElementById("l-result").innerHTML="";
-}
-function lOnFacial(){
-  var id=document.getElementById("l-fond").value;
-  var f=FONDS[id];
-  if(f&&f.reserva>0){
-    var vf=pn(document.getElementById("l-facial").value);
-    if(!isNaN(vf)) document.getElementById("l-negoc").value=String(Math.round(vf*(1-f.reserva/100)));
+
+function pOnFacial() {
+  var id = document.getElementById("p-fond").value, f = FONDS[id];
+  if (f && f.reserva > 0) {
+    var v = pn(document.getElementById("p-facial").value);
+    if (!isNaN(v)) document.getElementById("p-negoc").value = String(Math.round(v * (1 - f.reserva / 100)));
   }
 }
 
-function makeRow(l,v,sub){
-  return "<div class='row"+(sub?" sub":"")+"'><span class='l'>"+l+"</span><span class='r'>"+v+"</span></div>";
+function lOnFond() {
+  setupFond("l", document.getElementById("l-fond").value);
+  document.getElementById("l-negoc").value = "";
+  document.getElementById("l-result").innerHTML = "";
 }
 
-function calcPre(){
-  var fid=document.getElementById("p-fond").value;
-  var Vf=pn(document.getElementById("p-facial").value);
-  var Vn=pn(document.getElementById("p-negoc").value);
-  var n=pn(document.getElementById("p-plazo").value);
-  var scbPct=pn(document.getElementById("p-scb")?document.getElementById("p-scb").value:"0");
-  var t1=pn(document.getElementById("p-t1").value);
-  var t2=pn(document.getElementById("p-t2").value);
-  var t3=pn(document.getElementById("p-t3").value);
-  var errEl=document.getElementById("p-err");
-  if(!fid||isNaN(Vf)||isNaN(Vn)||isNaN(n)||Vf<=0||Vn<=0||n<=0){
-    errEl.textContent="Completa todos los campos.";errEl.style.display="block";
-    document.getElementById("p-result").innerHTML="";return;
+function lOnFacial() {
+  var id = document.getElementById("l-fond").value, f = FONDS[id];
+  if (f && f.reserva > 0) {
+    var v = pn(document.getElementById("l-facial").value);
+    if (!isNaN(v)) document.getElementById("l-negoc").value = String(Math.round(v * (1 - f.reserva / 100)));
   }
-  errEl.style.display="none";
-  var f=FONDS[fid];
-  var ESC=[{l:"Favorable",c:"#4CAF50",tm:t1/100},{l:"Base",c:"#C9A84C",tm:t2/100},{l:"Conservador",c:"#E07B39",tm:t3/100}];
-  var html="<div class='info-bar'>"+f.nombre+" &nbsp;·&nbsp; Facial: <strong>"+cop(Vf)+"</strong> &nbsp;·&nbsp; Negociacion: <strong>"+cop(Vn)+"</strong> &nbsp;·&nbsp; Plazo: <strong>"+n+" meses</strong></div>";
-  html+="<div class='esc-grid'>";
-  ESC.forEach(function(e){
-    var bM=f.bolsa?Vn*0.002:0;
-    var ibM=bM*0.19;
-    var sM=f.bolsa?Vn*(scbPct/100):0;
-    var isM=sM*0.19;
-    var int=Vn*e.tm*n;
-    var gir=Vn-bM-ibM-sM-isM-int;
-    html+="<div class='esc-card' style='border:1px solid "+e.c+"44'>";
-    html+="<div class='esc-title' style='color:"+e.c+"'>"+e.l+"</div>";
-    html+=makeRow("Tasa mensual",(e.tm*100).toFixed(2)+"%");
-    html+=makeRow("Tasa anual",(e.tm*12*100).toFixed(2)+"%");
-    if(bM>0) html+=makeRow("Costos bolsa (0.2%)","- "+cop(bM));
-    if(ibM>0) html+=makeRow("IVA bolsa (19%)","- "+cop(ibM));
-    if(sM>0) html+=makeRow("SCB ("+scbPct+"%)","- "+cop(sM));
-    if(isM>0) html+=makeRow("IVA SCB (19%)","- "+cop(isM));
-    html+=makeRow("Intereses","- "+cop(int));
-    html+="<div class='esc-total'><span style='color:"+e.c+";font-weight:600;font-size:12px'>A girar</span><span style='color:#E8C96A;font-weight:700;font-size:15px'>"+cop(gir)+"</span></div>";
-    html+="</div>";
+}
+
+function mkrow(l, v, sub) {
+  return "<div class='row" + (sub ? " sub" : "") + "'><span class='l'>" + l + "</span><span class='r'>" + v + "</span></div>";
+}
+
+function calcPre() {
+  var fid = document.getElementById("p-fond").value;
+  var Vf = pn(document.getElementById("p-facial").value);
+  var Vn = pn(document.getElementById("p-negoc").value);
+  var n = pn(document.getElementById("p-plazo").value);
+  var scbEl = document.getElementById("p-scb");
+  var scbP = scbEl ? (pn(scbEl.value) || 0) : 0;
+  var t1 = pn(document.getElementById("p-t1").value);
+  var t2 = pn(document.getElementById("p-t2").value);
+  var t3 = pn(document.getElementById("p-t3").value);
+  var e = document.getElementById("p-err");
+  if (!fid || isNaN(Vf) || isNaN(Vn) || isNaN(n) || Vf <= 0 || Vn <= 0 || n <= 0) {
+    e.textContent = "Completa todos los campos."; e.style.display = "block";
+    document.getElementById("p-result").innerHTML = ""; return;
+  }
+  e.style.display = "none";
+  var f = FONDS[fid];
+  var ESC = [{l:"Favorable",c:"#4CAF50",tm:t1/100},{l:"Base",c:"#C9A84C",tm:t2/100},{l:"Conservador",c:"#E07B39",tm:t3/100}];
+  var h = "<div class='info-bar'><strong>" + f.nombre + "</strong><br>Facial: <strong>" + cop(Vf) + "</strong> &nbsp;·&nbsp; Negociación: <strong>" + cop(Vn) + "</strong> &nbsp;·&nbsp; Plazo: <strong>" + n + " meses</strong></div>";
+  h += "<div class='esc-grid'>";
+  ESC.forEach(function(es) {
+    var bM = f.bolsa ? Vn * 0.002 : 0, ibM = bM * 0.19;
+    var sM = f.bolsa ? Vn * (scbP / 100) : 0, isM = sM * 0.19;
+    var int = Vn * es.tm * n, gir = Vn - bM - ibM - sM - isM - int;
+    h += "<div class='esc-card' style='border:1px solid " + es.c + "55'>";
+    h += "<div class='esc-title' style='color:" + es.c + "'>" + es.l + "</div>";
+    h += mkrow("Tasa mensual", (es.tm * 100).toFixed(2) + "%");
+    h += mkrow("Tasa anual", (es.tm * 12 * 100).toFixed(2) + "%");
+    if (bM > 0) h += mkrow("Costos bolsa (0.2%)", "- " + cop(bM));
+    if (ibM > 0) h += mkrow("IVA bolsa (19%)", "- " + cop(ibM));
+    if (sM > 0) h += mkrow("SCB (" + scbP + "%)", "- " + cop(sM));
+    if (isM > 0) h += mkrow("IVA SCB (19%)", "- " + cop(isM));
+    h += mkrow("Intereses", "- " + cop(int));
+    h += "<div class='esc-total'><span style='color:" + es.c + ";font-weight:600;font-size:13px'>A girar</span><span style='color:#E8C96A;font-weight:700;font-size:17px'>" + cop(gir) + "</span></div>";
+    h += "</div>";
   });
-  html+="</div>";
-  document.getElementById("p-result").innerHTML=html;
+  h += "</div>";
+  document.getElementById("p-result").innerHTML = h;
+  setTimeout(function() { document.getElementById("p-result").scrollIntoView({behavior:"smooth",block:"start"}); }, 100);
 }
 
-function calcLiq(){
-  var fid=document.getElementById("l-fond").value;
-  var Vf=pn(document.getElementById("l-facial").value);
-  var Vn=pn(document.getElementById("l-negoc").value);
-  var tm=pn(document.getElementById("l-tasa").value)/100;
-  var n=pn(document.getElementById("l-plazo").value);
-  var ivaPct=pn(document.getElementById("l-iva").value);
-  var fcPct=pn(document.getElementById("l-factcl").value)/100;
-  var retePct=pn(document.getElementById("l-rete").value);
-  var enBolsa=document.getElementById("l-bolsa").checked;
-  var gmfAsume=document.getElementById("l-gmf").checked;
-  var scbPct=document.getElementById("l-scb")?pn(document.getElementById("l-scb").value):0;
-  var errEl=document.getElementById("l-err");
-  if(!fid||isNaN(Vf)||isNaN(Vn)||isNaN(tm)||isNaN(n)||Vf<=0||Vn<=0||n<=0||tm<=0){
-    errEl.textContent="Completa todos los campos.";errEl.style.display="block";
-    document.getElementById("l-result").innerHTML="";return;
+function calcLiq() {
+  var fid = document.getElementById("l-fond").value;
+  var Vf = pn(document.getElementById("l-facial").value);
+  var Vn = pn(document.getElementById("l-negoc").value);
+  var tm = pn(document.getElementById("l-tasa").value) / 100;
+  var n = pn(document.getElementById("l-plazo").value);
+  var ivaP = pn(document.getElementById("l-iva").value);
+  var fcP = pn(document.getElementById("l-factcl").value) / 100;
+  var reteP = pn(document.getElementById("l-rete").value);
+  var scbEl = document.getElementById("l-scb");
+  var scbP = scbEl ? (pn(scbEl.value) || 0) : 0;
+  var e = document.getElementById("l-err");
+  if (!fid || isNaN(Vf) || isNaN(Vn) || isNaN(tm) || isNaN(n) || Vf <= 0 || Vn <= 0 || n <= 0 || tm <= 0) {
+    e.textContent = "Completa todos los campos."; e.style.display = "block";
+    document.getElementById("l-result").innerHTML = ""; return;
   }
-  errEl.style.display="none";
-  var f=FONDS[fid];
-  var iva=ivaPct/100;
-  var resM=Vf-Vn;
-  var bM=f.bolsa?Vn*0.002:0;
-  var ibM=bM*0.19;
-  var sM=f.bolsa?Vn*(scbPct/100):0;
-  var isM=sM*0.19;
-  var intM=Vn*tm*n;
-  var girarF=Vn-bM-ibM-sM-isM-intM;
-  var factGTC=Vf;
-  var factGTCsi=Vf/(1+iva);
-  var ivaGTC=factGTC-factGTCsi;
-  var factCl=Vf*fcPct;
-  var factClSi=factCl/(1+iva);
-  var ivaCl=factCl-factClSi;
-  var difGTC=factGTC-factCl;
-  var ivaDesc=ivaGTC-ivaCl;
-  var rete=enBolsa?0:factClSi*(retePct/100);
-  var antesGMF=girarF-difGTC-ivaDesc-rete;
-  var gmf=gmfAsume?0:antesGMF*0.004;
-  var girarCl=antesGMF-gmf;
+  e.style.display = "none";
+  var f = FONDS[fid], iva = ivaP / 100;
+  var resM = Vf - Vn;
+  var bM = f.bolsa ? Vn * 0.002 : 0, ibM = bM * 0.19;
+  var sM = f.bolsa ? Vn * (scbP / 100) : 0, isM = sM * 0.19;
+  var intM = Vn * tm * n;
+  var girarF = Vn - bM - ibM - sM - isM - intM;
+  var factGTC = Vf, factGTCsi = Vf / (1 + iva), ivaGTC = factGTC - factGTCsi;
+  var factCl = Vf * fcP, factClSi = factCl / (1 + iva), ivaCl = factCl - factClSi;
+  var difGTC = factGTC - factCl, ivaDesc = ivaGTC - ivaCl;
+  var rete = bolsaOn ? 0 : factClSi * (reteP / 100);
+  var antesGMF = girarF - difGTC - ivaDesc - rete;
+  var gmf = gmfOn ? 0 : antesGMF * 0.004;
+  var girarCl = antesGMF - gmf;
 
-  var h="<div class='result'>";
-  h+="<div class='res-title'>Liquidacion final — "+f.nombre+"</div>";
-  h+="<div class='divider'>FONDEADOR</div>";
-  h+=makeRow("Valor facial GTC",cop(Vf));
-  if(resM>0) h+=makeRow("Valor de reserva","- "+cop(resM));
-  h+=makeRow("Valor de negociacion",cop(Vn));
-  if(bM>0) h+=makeRow("Costos de bolsa (0.2%)","- "+cop(bM));
-  if(ibM>0) h+=makeRow("IVA costos de bolsa (19%)","- "+cop(ibM));
-  if(sM>0) h+=makeRow("Costos SCB ("+scbPct+"%)","- "+cop(sM));
-  if(isM>0) h+=makeRow("IVA costos SCB (19%)","- "+cop(isM));
-  h+=makeRow("Intereses ("+parseFloat(tm*100).toFixed(2)+"% x "+n+" meses)","- "+cop(intM));
-  h+="<div class='total2'><span class='l'>Valor girado por el fondeador</span><span class='r'>"+cop(girarF)+"</span></div>";
-  h+="<div class='divider'>CLIENTE</div>";
-  h+=makeRow("Factura GTC con IVA ("+ivaPct+"%)",cop(factGTC));
-  h+=makeRow("Factura GTC sin IVA",cop(factGTCsi),true);
-  h+=makeRow("IVA factura GTC",cop(ivaGTC),true);
-  h+=makeRow("Factura cliente ("+(fcPct*100)+"% del facial)",cop(factCl));
-  h+=makeRow("Factura cliente sin IVA",cop(factClSi),true);
-  h+=makeRow("IVA factura cliente",cop(ivaCl),true);
-  h+=makeRow("Diferencial Global",cop(difGTC));
-  h+=makeRow("IVA descontable",cop(ivaDesc));
-  h+=makeRow(enBolsa?"Retefuente (exenta — bolsa)":"Retefuente ("+retePct+"%)",enBolsa?"$ 0":"- "+cop(rete));
-  h+=makeRow("Valor a girar antes de GMF",cop(antesGMF));
-  h+=makeRow(gmfAsume?"GMF (asumido por GTC)":"GMF (4 x mil)",gmfAsume?"$ 0":"- "+cop(gmf));
-  h+="<div class='total'><span class='l'>Valor a girar al cliente</span><span class='r'>"+cop(girarCl)+"</span></div>";
-  h+="</div>";
-  document.getElementById("l-result").innerHTML=h;
+  var h = "<div class='result'>";
+  h += "<div class='res-title'>Liquidación final — " + f.nombre + "</div>";
+  h += "<div class='divider'>FONDEADOR</div>";
+  h += mkrow("Valor facial GTC", cop(Vf));
+  if (resM > 0) h += mkrow("Valor de reserva", "- " + cop(resM));
+  h += mkrow("Valor de negociación", cop(Vn));
+  if (bM > 0) h += mkrow("Costos de bolsa (0.2%)", "- " + cop(bM));
+  if (ibM > 0) h += mkrow("IVA costos de bolsa", "- " + cop(ibM));
+  if (sM > 0) h += mkrow("Costos SCB (" + scbP + "%)", "- " + cop(sM));
+  if (isM > 0) h += mkrow("IVA costos SCB", "- " + cop(isM));
+  h += mkrow("Intereses (" + parseFloat(tm * 100).toFixed(2) + "% × " + n + " meses)", "- " + cop(intM));
+  h += "<div class='total2'><span class='l'>Valor girado por el fondeador</span><span class='r'>" + cop(girarF) + "</span></div>";
+  h += "<div class='divider'>CLIENTE</div>";
+  h += mkrow("Factura GTC con IVA (" + ivaP + "%)", cop(factGTC));
+  h += mkrow("Factura GTC sin IVA", cop(factGTCsi), true);
+  h += mkrow("IVA factura GTC", cop(ivaGTC), true);
+  h += mkrow("Factura cliente (" + (fcP * 100) + "% del facial)", cop(factCl));
+  h += mkrow("Factura cliente sin IVA", cop(factClSi), true);
+  h += mkrow("IVA factura cliente", cop(ivaCl), true);
+  h += mkrow("Diferencial Global", cop(difGTC));
+  h += mkrow("IVA descontable", cop(ivaDesc));
+  h += mkrow(bolsaOn ? "Retefuente (exenta — bolsa)" : "Retefuente (" + reteP + "%)", bolsaOn ? "$\u00a00" : "- " + cop(rete));
+  h += mkrow("Valor a girar antes de GMF", cop(antesGMF));
+  h += mkrow(gmfOn ? "GMF (asumido por GTC)" : "GMF (4 × mil)", gmfOn ? "$\u00a00" : "- " + cop(gmf));
+  h += "<div class='total'><span class='l'>Valor a girar al cliente</span><span class='r'>" + cop(girarCl) + "</span></div>";
+  h += "</div>";
+  document.getElementById("l-result").innerHTML = h;
+  setTimeout(function() { document.getElementById("l-result").scrollIntoView({behavior:"smooth",block:"start"}); }, 100);
 }
 
 populateFonds();
