@@ -3,634 +3,401 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>GTC — Orden de Operación</title>
+<title>GTC — Agente Liquidador</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#0A0A0A;color:#F0F0F0;font-family:system-ui,sans-serif;font-size:15px}
+body{background:#0A0A0A;color:#F0F0F0;font-family:system-ui,sans-serif;min-height:100vh;font-size:15px}
 .header{background:#141414;border-bottom:1px solid #C9A84C44;padding:14px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
 .logo{width:36px;height:36px;border-radius:50%;background:#C9A84C;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#0A0A0A;flex-shrink:0}
 .brand{font-size:14px;font-weight:700;color:#E8C96A;letter-spacing:1px}
 .sub{font-size:11px;color:#666}
 .wrap{max-width:100%;padding:16px}
-.sec{font-size:11px;font-weight:600;color:#C9A84C;letter-spacing:1px;margin-bottom:10px;margin-top:22px;padding-bottom:6px;border-bottom:1px solid #2A2A2A}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{flex:1;padding:10px 6px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#888;font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit;-webkit-appearance:none;appearance:none}
+.tab.active{border-color:#C9A84C;background:#C9A84C18;color:#E8C96A;font-weight:600}
+.panel{display:none}.panel.active{display:block}
+.sec{font-size:11px;font-weight:600;color:#555;letter-spacing:1px;margin-bottom:10px;margin-top:22px}
 .lbl{font-size:13px;color:#999;margin-bottom:5px}
 .lbl span{color:#C9A84C;margin-left:6px;font-size:11px}
-input,select,textarea{display:block;width:100%;background:#1C1C1C;border:1px solid #333;border-radius:8px;color:#F0F0F0;padding:11px 13px;font-size:15px;margin-bottom:14px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
+input,select{display:block;width:100%;background:#1C1C1C;border:1px solid #333;border-radius:8px;color:#F0F0F0;padding:11px 13px;font-size:15px;margin-bottom:14px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
-input.ro{background:#141414;border-color:#222;color:#666}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.btn{width:100%;padding:14px;background:#C9A84C;color:#000;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:12px;font-family:inherit;touch-action:manipulation}
+input.sm,select.sm{max-width:180px}
+input.ro{background:#141414;border-color:#222;color:#555}
+.btn{width:100%;padding:14px;background:#C9A84C;color:#000;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:20px;font-family:inherit;-webkit-appearance:none;appearance:none;touch-action:manipulation}
 .btn:active{background:#b8943d}
-.btn-sec{background:#1C1C1C;color:#C9A84C;border:1px solid #C9A84C44}
-.btn-sec:active{background:#252525}
 .err{color:#E07B39;font-size:13px;margin-bottom:16px;padding:10px;background:#E07B3915;border-radius:8px}
-.prod-table{width:100%;border-collapse:collapse;margin-bottom:14px}
-.prod-table th{background:#1a1a1a;color:#C9A84C;font-size:11px;padding:8px 6px;text-align:left;font-weight:600;letter-spacing:.5px}
-.prod-table td{padding:6px;border-bottom:1px solid #1E1E1E;vertical-align:middle}
-.prod-table td input{margin-bottom:0;padding:8px 10px;font-size:13px}
-.prod-table td input.ro{background:#141414;color:#666}
-.del-btn{background:#E07B3922;border:1px solid #E07B3944;color:#E07B39;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:13px;font-family:inherit;touch-action:manipulation;white-space:nowrap}
-.add-btn{background:#C9A84C18;border:1px solid #C9A84C44;color:#C9A84C;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:13px;font-family:inherit;margin-bottom:14px;touch-action:manipulation}
-.info-card{background:#141414;border:1px solid #2A2A2A;border-radius:10px;padding:14px;margin-bottom:14px}
-.info-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #1E1E1E}
-.info-row .l{color:#888}.info-row .r{color:#F0F0F0;text-align:right}
-.info-row.total .l{color:#C9A84C;font-weight:600}.info-row.total .r{color:#E8C96A;font-weight:700;font-size:16px}
-.tag{display:inline-block;background:#C9A84C22;color:#C9A84C;border:1px solid #C9A84C44;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600}
-.variable-badge{display:inline-block;background:#E07B3922;color:#E07B39;border:1px solid #E07B3944;border-radius:4px;padding:2px 6px;font-size:10px;margin-left:6px}
-
-/* PRINT STYLES */
-@media print{
-  body{background:#fff;color:#222;font-size:11px}
-  .no-print{display:none!important}
-  .header{display:none}
-  .wrap{padding:0}
-  .print-doc{display:block!important}
-  .form-section{display:none!important}
-}
-.print-doc{display:none}
-
-/* DOC STYLES */
-.doc{font-family:Arial,sans-serif;font-size:11px;color:#222;background:#fff;padding:20px;max-width:800px;margin:0 auto}
-.doc-header{background:#000;color:#c9a84c;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:6px;margin-bottom:16px}
-.doc-gtco{font-size:28px;font-weight:bold;letter-spacing:3px;color:#c9a84c}
-.doc-sub{font-size:9px;opacity:.8;margin-top:2px}
-.doc-orden{font-size:22px;font-weight:bold;color:#c9a84c}
-.doc-badge{display:inline-block;background:#c9a84c;color:#000;padding:2px 8px;border-radius:3px;font-weight:bold;font-size:8px;margin-top:4px}
-.doc-meta{text-align:right;font-size:10px;line-height:1.8}
-.doc h2{background:#1a3a5c;color:white;padding:5px 10px;font-size:10px;margin:12px 0 6px;border-radius:3px;letter-spacing:1px}
-.doc-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
-.doc-card{border:1px solid #ddd;border-radius:4px;padding:8px}
-.doc-card-title{font-weight:bold;color:#1a3a5c;font-size:9px;margin-bottom:5px;text-transform:uppercase;border-bottom:1px solid #eee;padding-bottom:2px}
-.doc-row{display:flex;justify-content:space-between;margin-bottom:2px;gap:6px;font-size:10px}
-.doc-lbl{color:#888;white-space:nowrap}
-.doc-table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:10px}
-.doc-table th{background:#1a3a5c;color:white;padding:4px 6px;text-align:left}
-.doc-table td{padding:3px 6px;border-bottom:1px solid #f0f0f0}
-.doc-tr-sub td{background:#f8f9fa;font-weight:bold;border-top:1px solid #ddd}
-.doc-tr-facial td{background:#000;color:#c9a84c;font-weight:bold;font-size:11px}
-.doc-liq-neg{color:#dc3545}
-.doc-liq-bold td{font-weight:bold;background:#eaf4fd}
-.doc-liq-total td{font-weight:bold;background:#1a3a5c;color:white}
-.doc-liq-ingreso td{font-weight:bold;background:#d4edda;color:#28a745;font-size:12px;padding:5px}
-.doc-firmas{display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:40px}
-.doc-firma-line{border-top:1px solid #333;padding-top:6px;margin-top:35px;font-size:10px}
-.doc-en-letras{font-style:italic;color:#666;font-size:9px;margin:3px 0 6px}
-.doc-footer{margin-top:20px;text-align:center;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:6px}
+.result{background:#141414;border:1px solid #C9A84C44;border-radius:12px;padding:16px}
+.res-title{font-size:13px;font-weight:600;color:#C9A84C;margin-bottom:10px}
+.divider{font-size:11px;font-weight:600;color:#C9A84C;letter-spacing:1px;margin-top:16px;margin-bottom:4px;padding-top:10px;border-top:1px solid #2A2A2A}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1E1E1E;padding:8px 0;font-size:13px;gap:8px}
+.row .l{color:#888;flex:1}.row .r{color:#F0F0F0;text-align:right;white-space:nowrap}
+.row.sub .l{color:#555;font-size:12px;padding-left:10px}.row.sub .r{font-size:12px;color:#888}
+.total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 2px;margin-top:4px}
+.total .l{color:#C9A84C;font-weight:600;font-size:14px}
+.total .r{color:#E8C96A;font-weight:700;font-size:20px}
+.total2{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #2A2A2A}
+.total2 .l{color:#C9A84C;font-weight:600;font-size:13px}
+.total2 .r{color:#E8C96A;font-weight:700;font-size:16px}
+.esc-grid{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.esc-card{background:#141414;border-radius:12px;padding:14px}
+.esc-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.esc-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 2px;margin-top:4px}
+.info-bar{font-size:12px;color:#777;margin-bottom:14px;line-height:1.6;background:#161616;padding:10px 12px;border-radius:8px;border:1px solid #252525}
+.info-bar strong{color:#E0E0E0}
+.tasa-grid{display:flex;gap:10px;margin-bottom:14px}
+.tasa-col{flex:1;min-width:0}
+.tasa-label{font-size:11px;margin-bottom:5px;font-weight:600}
+.tasa-col input{max-width:100%;margin-bottom:0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:14px;background:#161616;border-radius:8px;border:1px solid #2A2A2A;cursor:pointer;user-select:none;touch-action:manipulation}
+.toggle-row span{font-size:13px;color:#999;flex:1;line-height:1.4;margin-right:12px}
+.toggle{width:44px;height:26px;min-width:44px;background:#333;border-radius:13px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#C9A84C}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:21px}
 </style>
 </head>
 <body>
-
-<div class="header no-print">
+<div class="header">
   <div class="logo">G</div>
   <div>
     <div class="brand">GLOBAL TRADE COMMERCE</div>
-    <div class="sub">Agente de Órdenes v1.0</div>
+    <div class="sub">Agente Liquidador v1.0</div>
   </div>
 </div>
-
 <div class="wrap">
-<div class="form-section">
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('pre')">Preliquidación</button>
+    <button class="tab" onclick="setTab('liq')">Liquidación Final</button>
+  </div>
 
-<!-- DATOS OPERACION -->
-<div class="sec">DATOS DE LA OPERACIÓN</div>
-<div class="row2">
-  <div>
-    <div class="lbl">Número de orden</div>
-    <input id="f-orden" placeholder="ej. GTC-01300326">
+  <!-- PRELIQUIDACION -->
+  <div id="panel-pre" class="panel active">
+    <div class="lbl">Fondeador</div>
+    <select id="p-fond" onchange="pOnFond()"><option value="">Seleccionar...</option></select>
+    <div class="lbl">Valor facial ($)</div>
+    <input id="p-facial" inputmode="numeric" placeholder="ej. 5200000000" oninput="pOnFacial()">
+    <div class="lbl" id="p-negoc-lbl">Valor de negociación ($)</div>
+    <input id="p-negoc" inputmode="numeric" placeholder="ej. 5200000000">
+    <div id="p-scb-wrap" style="display:none">
+      <div class="lbl" id="p-scb-lbl">Costo SCB (%)</div>
+      <input id="p-scb" class="sm" inputmode="decimal">
+    </div>
+    <div class="lbl" id="p-plazo-lbl">Plazo (meses)</div>
+    <input id="p-plazo" class="sm" inputmode="numeric" placeholder="ej. 6">
+    <div class="lbl" style="margin-bottom:8px">Tasas por escenario (%)</div>
+    <div class="tasa-grid">
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#4CAF50">Favorable</div>
+        <input id="p-t1" inputmode="decimal" value="1.8">
+      </div>
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#C9A84C">Base</div>
+        <input id="p-t2" inputmode="decimal" value="2.0">
+      </div>
+      <div class="tasa-col">
+        <div class="tasa-label" style="color:#E07B39">Conservador</div>
+        <input id="p-t3" inputmode="decimal" value="2.2">
+      </div>
+    </div>
+    <button class="btn" onclick="calcPre()">Calcular escenarios</button>
+    <div id="p-err" class="err" style="display:none"></div>
+    <div id="p-result"></div>
   </div>
-  <div>
-    <div class="lbl">Fecha</div>
-    <input type="date" id="f-fecha">
-  </div>
-</div>
-<div class="row2">
-  <div>
-    <div class="lbl">Tipo de factoring</div>
-    <select id="f-tipo">
-      <option>FACTORING CON RECURSO</option>
-      <option>FACTORING SIN RECURSO</option>
+
+  <!-- LIQUIDACION FINAL -->
+  <div id="panel-liq" class="panel">
+    <div class="sec">DATOS DEL FONDEADOR</div>
+    <div class="lbl">Fondeador</div>
+    <select id="l-fond" onchange="lOnFond()"><option value="">Seleccionar...</option></select>
+    <div class="lbl">Valor facial GTC ($)</div>
+    <input id="l-facial" inputmode="numeric" placeholder="ej. 5200000000" oninput="lOnFacial()">
+    <div class="lbl" id="l-negoc-lbl">Valor de negociación ($)</div>
+    <input id="l-negoc" inputmode="numeric" placeholder="ej. 5200000000">
+    <div id="l-scb-wrap" style="display:none">
+      <div class="lbl" id="l-scb-lbl">Costo SCB (%)</div>
+      <input id="l-scb" class="sm" inputmode="decimal">
+    </div>
+    <!-- costo fijo: solo Coltefinanciera -->
+    <div id="l-cf-wrap" style="display:none">
+      <div class="lbl">Costo fijo fondeador (con IVA) <span>transferencia bancaria</span></div>
+      <input id="l-cf" class="sm ro" inputmode="numeric" readonly>
+    </div>
+    <div class="lbl" id="l-tasa-lbl">Tasa mensual real de subasta (%)</div>
+    <input id="l-tasa" inputmode="decimal" placeholder="ej. 1.8">
+    <div class="lbl" id="l-plazo-lbl">Plazo (meses)</div>
+    <input id="l-plazo" class="sm" inputmode="numeric" placeholder="ej. 6">
+
+    <div class="sec">DATOS DEL CLIENTE</div>
+    <div class="lbl">IVA aplicable (%)</div>
+    <select id="l-iva" class="sm">
+      <option value="5">5%</option>
+      <option value="19">19%</option>
     </select>
-  </div>
-  <div>
-    <div class="lbl">Plazo</div>
-    <input id="f-plazo" placeholder="ej. 180 días">
-  </div>
-</div>
-<div class="row2">
-  <div>
-    <div class="lbl">No. Factura compra</div>
-    <input id="f-factcomp" placeholder="ej. No. 1045">
-  </div>
-  <div>
-    <div class="lbl">No. Factura venta</div>
-    <input id="f-factventa" placeholder="ej. No. 104">
-  </div>
-</div>
-
-<!-- VENDEDOR -->
-<div class="sec">VENDEDOR (CLIENTE)</div>
-<div class="lbl">Seleccionar cliente</div>
-<select id="f-cliente" onchange="onCliente()">
-  <option value="">Seleccionar...</option>
-</select>
-<div id="cliente-info" style="display:none" class="info-card">
-  <div class="info-row"><span class="l">Razón Social</span><span class="r" id="ci-nombre"></span></div>
-  <div class="info-row"><span class="l">NIT</span><span class="r" id="ci-nit"></span></div>
-  <div class="info-row"><span class="l">Rep. Legal</span><span class="r" id="ci-rep"></span></div>
-  <div class="info-row"><span class="l">Teléfono</span><span class="r" id="ci-tel"></span></div>
-  <div class="info-row"><span class="l">Dirección</span><span class="r" id="ci-dir"></span></div>
-  <div class="info-row"><span class="l">Ciudad</span><span class="r" id="ci-ciudad"></span></div>
-</div>
-
-<!-- FONDEADOR -->
-<div class="sec">FONDEADOR / PROVEEDOR DE LIQUIDEZ</div>
-<div class="lbl">Proveedor de liquidez</div>
-<select id="f-fond">
-  <option value="">Seleccionar...</option>
-  <option>BMC Miguel Quijano</option>
-  <option>BMC Mercado y Bolsa</option>
-  <option>Coltefinanciera</option>
-  <option>Integra</option>
-  <option>Cesion Bank</option>
-  <option>Servifin</option>
-  <option>Irisbank</option>
-  <option>Liquitech</option>
-</select>
-
-<!-- INVENTARIO -->
-<div class="sec">INVENTARIO / PRODUCTOS</div>
-<div class="lbl">Seleccionar producto histórico</div>
-<select id="f-prod-sel" onchange="onProdSel()">
-  <option value="">Seleccionar producto...</option>
-</select>
-<div style="overflow-x:auto">
-<table class="prod-table" id="prod-table">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Descripción</th>
-      <th>Cantidad</th>
-      <th>Vr. Unitario</th>
-      <th>IVA %</th>
-      <th>Vr. Total</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="prod-body"></tbody>
-</table>
-</div>
-<button class="add-btn" onclick="addProdManual()">+ Agregar producto nuevo</button>
-
-<!-- TOTALES -->
-<div id="totales-wrap" style="display:none" class="info-card">
-  <div class="info-row"><span class="l">Total Bruto</span><span class="r" id="t-bruto"></span></div>
-  <div class="info-row"><span class="l">IVA</span><span class="r" id="t-iva"></span></div>
-  <div class="info-row total"><span class="l">VALOR FACIAL FACTURA GTC</span><span class="r" id="t-facial"></span></div>
-</div>
-
-<!-- PRELIQUIDACION -->
-<div class="sec">PRELIQUIDACIÓN</div>
-<div class="row2">
-  <div>
-    <div class="lbl">Tasa descuento fondeador (%)</div>
-    <input id="f-tasa" inputmode="decimal" placeholder="ej. 2.0">
-  </div>
-  <div>
-    <div class="lbl">Diferencial GTC (%)</div>
-    <input id="f-dif" inputmode="decimal" placeholder="ej. 3.0">
-  </div>
-</div>
-<div class="row2">
-  <div>
-    <div class="lbl">Costos bolsa (%)</div>
-    <input id="f-bolsa" inputmode="decimal" placeholder="ej. 0.2" value="0">
-  </div>
-  <div>
-    <div class="lbl">IVA costos bolsa (%)</div>
-    <input id="f-ivabolsa" inputmode="decimal" value="19" class="ro" readonly>
-  </div>
-</div>
-<div class="row2">
-  <div>
-    <div class="lbl">Costos SCB (%)</div>
-    <input id="f-scb" inputmode="decimal" placeholder="ej. 2.43" value="0">
-  </div>
-  <div>
-    <div class="lbl">IVA SCB (%)</div>
-    <input id="f-ivascb" inputmode="decimal" value="19" class="ro" readonly>
-  </div>
-</div>
-
-<div class="row2">
-  <div>
-    <div class="lbl">GMF</div>
-    <select id="f-gmf">
-      <option value="gtc">A cargo de GTC</option>
-      <option value="cliente">A cargo del cliente</option>
+    <div class="lbl">Factura cliente (% del facial GTC)</div>
+    <select id="l-factcl" class="sm">
+      <option value="96">96.0%</option>
+      <option value="96.5">96.5%</option>
+      <option value="97">97.0%</option>
+      <option value="97.5">97.5%</option>
     </select>
-  </div>
-  <div>
     <div class="lbl">Retefuente</div>
-    <select id="f-rete">
-      <option value="exenta">Exenta (bolsa)</option>
+    <select id="l-rete" class="sm">
       <option value="1.25">1.25%</option>
       <option value="1.5">1.5%</option>
       <option value="2.5">2.5%</option>
+      <option value="0">0%</option>
     </select>
+
+    <div class="toggle-row" onclick="toggleBolsa()">
+      <span>Registro en bolsa — exento de retefuente</span>
+      <div class="toggle" id="tog-bolsa"></div>
+    </div>
+    <div class="toggle-row" onclick="toggleGmf()">
+      <span>GMF lo asume Global Trade Commerce</span>
+      <div class="toggle" id="tog-gmf"></div>
+    </div>
+
+    <button class="btn" onclick="calcLiq()">Liquidar</button>
+    <div id="l-err" class="err" style="display:none"></div>
+    <div id="l-result"></div>
   </div>
 </div>
 
-<!-- CONDICIONES -->
-<div class="sec">CONDICIONES Y OBSERVACIONES</div>
-<div class="lbl">Condición tributaria</div>
-<input id="f-tributario" placeholder="ej. Agropecuario — Registrado BMC — EXENTO retefuente">
-<div class="lbl">Garantías</div>
-<input id="f-garantia" placeholder="ej. Pagaré con carta de instrucciones">
-<div class="lbl">Observaciones</div>
-<input id="f-obs" placeholder="ej. NO APLICA RETEFUENTE FACTURA REGISTRADA EN BOLSA">
-
-<div id="f-err" class="err" style="display:none"></div>
-<button class="btn" onclick="generarOrden()">Generar Orden de Operación</button>
-
-</div><!-- end form-section -->
-
-<!-- DOCUMENTO GENERADO -->
-<div id="doc-output"></div>
-
-</div><!-- end wrap -->
-
 <script>
-var today = new Date();
-document.getElementById("f-fecha").value = today.toISOString().split("T")[0];
-
-var CLIENTES = {
-  empanorte: {
-    nombre:"CI EMPAQUETADORA DEL NORTE SAS BIC", nit:"900.407.151-7",
-    rep:"ARVEY DUQUE VILLAMIZAR", cargo:"Gerente y Representante Legal",
-    tel:"(607) 5792557", dir:"CL 8N 3 A 90 BRR ZONA INDUSTRIAL I", ciudad:"Cúcuta",
-    productos:[
-      {desc:"ACEITE CRUDO DE PALMA - CPO -", umd:"KILOGRAMOS", precio:0, iva:5, variable:true},
-      {desc:"ACEITE CRUDO DE PALMA GRANEL", umd:"KILOGRAMOS", precio:0, iva:5, variable:true}
-    ]
-  },
-  meyan: {
-    nombre:"MEYAN S.A.", nit:"800.143.586-1",
-    rep:"BALTAZAR EDUARDO MESA RESTREPO", cargo:"Representante Legal",
-    tel:"(601) 6714357", dir:"CL 153 6 22", ciudad:"Bogotá",
-    productos:[
-      {desc:'SUBBASE TRITURADO BG 50 FR 2"', umd:"M3", precio:42017, iva:19, variable:false},
-      {desc:'ARENA TRITURADA DE 3/8"', umd:"M3", precio:58824, iva:19, variable:false},
-      {desc:'BASE TRITURADA DE 1 1/2"', umd:"M3", precio:50420, iva:19, variable:false},
-      {desc:"CRUDO DE RIO PARA LA TRITURADORA TELSMITH H2550", umd:"M3", precio:16807, iva:19, variable:false},
-      {desc:'PIEDRA PARA FILTRO TAMAÑO MÁXIMO 3"', umd:"M3", precio:29412, iva:19, variable:false},
-      {desc:'PIEDRA TRITURADA 4"', umd:"M3", precio:37815, iva:19, variable:false},
-      {desc:'TRITURADO DE 1 1/2"', umd:"M3", precio:54622, iva:19, variable:false},
-      {desc:'TRITURADO DE 3/4"', umd:"M3", precio:58823, iva:19, variable:false},
-      {desc:"ACERO ESTRUCTURAS", umd:"KG", precio:12185, iva:19, variable:false}
-    ]
-  },
-  carbones: {
-    nombre:"C.I. CARBONES DEL PORVENIR OTA SAS", nit:"900.852.420-0",
-    rep:"OSCAR TORRADO", cargo:"Representante Legal",
-    tel:"(602) 3188282260", dir:"REPRESA MARGEN IZQUIERDA JURISDICCIÓN ASTILLEROS", ciudad:"Cúcuta",
-    productos:[
-      {desc:"BOQUILLA CON COLOR JUNTA ESTRECHA", umd:"UND", precio:27324, iva:0, variable:false},
-      {desc:"KIT BAÑO TAO REDONDO SINGLE BLANCO", umd:"UND", precio:234121, iva:0, variable:false},
-      {desc:"KIT BAÑO TAO REDONDO SINGLE MARFIL", umd:"UND", precio:241758, iva:0, variable:false},
-      {desc:"SANITARIO ACUAPLUS ULTRA CON PED CORONA", umd:"UND", precio:210361, iva:0, variable:false},
-      {desc:"PISO CERÁMICA BUDAPEST BEIGE CARA DIFERENCIADA", umd:"M2", precio:51370, iva:0, variable:false},
-      {desc:"PISO CERAMICA MIKONO AZUL", umd:"M2", precio:50778, iva:0, variable:false},
-      {desc:"PISO CERAMICA MIKONO BEIGE", umd:"M2", precio:50778, iva:0, variable:false},
-      {desc:"PISO CERAMICA EUCALIPTO NEVADO", umd:"M2", precio:48429, iva:0, variable:false},
-      {desc:"PISO CERÁMICA DURANGO BEIGE", umd:"M2", precio:58997, iva:0, variable:false},
-      {desc:"PISO CERAMICA ZUKI B", umd:"M2", precio:51370, iva:0, variable:false},
-      {desc:"PISO PARED CERÁMICA OSLO BLANCA", umd:"M2", precio:45035, iva:0, variable:false},
-      {desc:"PISO CERAMICA CORUNA MULTICOLOR", umd:"M2", precio:62393, iva:0, variable:false},
-      {desc:"PISO CERAMICA EXTERIOR MEDELLIN UNICOLOR", umd:"M2", precio:46015, iva:0, variable:false},
-      {desc:"PISO CERAMICA OPERA NEGRO", umd:"M2", precio:52109, iva:0, variable:false},
-      {desc:"PISO CERAMICA SAMUI", umd:"M2", precio:56217, iva:0, variable:false},
-      {desc:"PISO CERAMICA LINQ 45X45 CM", umd:"M2", precio:46955, iva:0, variable:false},
-      {desc:"PISO CERAMICA CASTAÑO MULTICOLOR", umd:"M2", precio:61708, iva:0, variable:false},
-      {desc:"PISO CERAMICA GIOTA MARMOL VENATO", umd:"M2", precio:53617, iva:0, variable:false},
-      {desc:"PISO CERAMICA NUTIBARA GRIS", umd:"M2", precio:58997, iva:0, variable:false},
-      {desc:"PISO CERAMICA MIKONO NEGRO", umd:"M2", precio:50778, iva:0, variable:false},
-      {desc:"PISO CERAMICA MIKONO MARRON", umd:"M2", precio:50778, iva:0, variable:false},
-      {desc:"PISO CERAMICA OPERA BLANCA", umd:"M2", precio:52109, iva:0, variable:false},
-      {desc:"PISO CERAMICA NUTIBARA BEIGE", umd:"M2", precio:58997, iva:0, variable:false},
-      {desc:"PARED CERAMICA ABRIL ESTRUCTURADA GRIS CLARO", umd:"M2", precio:55438, iva:0, variable:false},
-      {desc:"PARED CERAMICA BLANCA", umd:"M2", precio:35001, iva:0, variable:false},
-      {desc:"PARED CERAMICA BURBANO ARENA", umd:"M2", precio:48788, iva:0, variable:false},
-      {desc:"PARED CERAMICA BURBANO MARFIL", umd:"M2", precio:48252, iva:0, variable:false},
-      {desc:"PARED CERAMICA CALAI MARFIL", umd:"M2", precio:47918, iva:0, variable:false},
-      {desc:"PARED CERAMICA CALAI BLANCA", umd:"M2", precio:49323, iva:0, variable:false},
-      {desc:"PARED CERAMICA MARIA MARFIL", umd:"M2", precio:49323, iva:0, variable:false},
-      {desc:"PARED CERAMICA ABRIL ESTRUCTURADA GRIS", umd:"M2", precio:55438, iva:0, variable:false},
-      {desc:"PARED CERAMICA MAYAL ESTRUCTURADA BLANCA", umd:"M2", precio:58364, iva:0, variable:false},
-      {desc:"PORCELANICO SAL SOLUBLE BERGAMO 60X60CM", umd:"M2", precio:48248, iva:0, variable:false},
-      {desc:"PISO CERAMICA MEDEL 44.8X44.8 CM", umd:"M2", precio:49213, iva:0, variable:false},
-      {desc:"BOQUILLA CON COLOR JUNTA ESTRECHA BEIGE 5KG", umd:"UND", precio:26134, iva:0, variable:false},
-      {desc:"CEMENTO CEMEX USO GENERAL", umd:"BULTO", precio:32100, iva:0, variable:false},
-      {desc:"VARILLA G-60 1/2 PULG", umd:"UND", precio:23740, iva:0, variable:false},
-      {desc:"VARILLA G-60 5/8 PULG", umd:"UND", precio:37080, iva:0, variable:false},
-      {desc:"MALLA ELECTROSOLDADA 6X2", umd:"UND", precio:81900, iva:0, variable:false},
-      {desc:"PINTURA INTERIOR LAVABLE TIPO 2 CORONA", umd:"GALON", precio:229900, iva:0, variable:false},
-      {desc:"PINTURA PARA HUMEDADES BLANCA ACUABLOCK", umd:"GALON", precio:159000, iva:0, variable:false},
-      {desc:"MORTERO TOPEX SECO PEGA PAÑETES 75KG", umd:"BULTO", precio:48410, iva:0, variable:false}
-    ]
-  },
-  shalom: {
-    nombre:"GRUPO EMPRESARIAL SHALOM GES SAS BIC", nit:"900.664.206-4",
-    rep:"ORLANDO ÁVILA MARTÍNEZ", cargo:"Representante Legal",
-    tel:"(601) 3102587653", dir:"CL 11 17 40", ciudad:"Bogotá",
-    productos:[
-      {desc:"ATÚN EN ACEITE VEGETAL XOE * 175 GRS", umd:"UND", precio:3900, iva:19, variable:false},
-      {desc:"SALCHICHA RONDA VIENA DE POLLO *150GR", umd:"UND", precio:2700, iva:19, variable:false},
-      {desc:"TAMAL TOLIMENSE RONDA *360GR", umd:"UND", precio:7800, iva:19, variable:false},
-      {desc:"LECHONA TOLIMENSE RONDA *250GR", umd:"UND", precio:9000, iva:19, variable:false},
-      {desc:"JAMONADA RONDA *370GR", umd:"UND", precio:6850, iva:19, variable:false},
-      {desc:"FRIJOL CON CARNE RONDA *220GR", umd:"UND", precio:4750, iva:19, variable:false},
-      {desc:"SARDINAS SABOR DEL PACÍFICO *425GR", umd:"UND", precio:5050, iva:19, variable:false}
-    ]
-  },
-  grandesvias: {
-    nombre:"INVERSIONES GRANDES VÍAS E INGENIERÍA SAS", nit:"830.031.937-1",
-    rep:"JOSÉ SIMEON LUGO", cargo:"Representante Legal",
-    tel:"(601) 4674438", dir:"CL 109 14 B 60 OF 204", ciudad:"Bogotá",
-    productos:[
-      {desc:"VENTA DE CEMENTO GRIS 50KG", umd:"BULTO", precio:30900, iva:19, variable:false}
-    ]
-  },
-  tak: {
-    nombre:"INGENIERIA & CONSTRUCCIONES TAK S.A.S.", nit:"901.594.712-2",
-    rep:"JOSÉ SIMEON LUGO", cargo:"Representante Legal",
-    tel:"(602) 3243417273", dir:"CR 57 99 A 65 OF 1007", ciudad:"Barranquilla",
-    productos:[
-      {desc:"CONCRETOS CLASE D, f'c psi (bases) FUNDIDO EN SITIO", umd:"M3", precio:892706, iva:19, variable:false},
-      {desc:'TUBO DE 24" CRUCE DE QUEBRADA', umd:"ML", precio:4950000, iva:19, variable:false},
-      {desc:"SUMINISTRO DE PIEZA ORNAMENTAL (HIERRO) REF F196", umd:"UND", precio:4465, iva:19, variable:false},
-      {desc:"MATERIAL DE CONFORMACIÓN PIEDRA RAJÓN E30CM, METRO CUBICO", umd:"M3", precio:118075, iva:19, variable:false},
-      {desc:"CEMENTO ULTRACEM USO GENERAL GRIS 50KG", umd:"BULTO", precio:37683, iva:19, variable:false},
-      {desc:"CABLE MT AL 185mm 15Kv P.HILOS 25mm XLPE PVC", umd:"ML", precio:46193, iva:19, variable:false},
-      {desc:"CHEQUE ACERO INOX TIPO 3165 1/2\" X 5000# A", umd:"UND", precio:225732, iva:19, variable:false},
-      {desc:"TERM 15KV 3M QTII EXT 3/0 AWG-500MCM AL 100% DIAM 21.3-33.8mm P.CINTA", umd:"UND", precio:701398, iva:19, variable:false}
-    ]
-  },
-  metco: {
-    nombre:"METCO SUISSE AG", nit:"CHE271584656",
-    rep:"—", cargo:"Representante Legal",
-    tel:"(51) 14184800", dir:"BAHNHOFSTRASSE 7 6003", ciudad:"Luzern - Suiza",
-    productos:[
-      {desc:"THE GROUND COPPER STONE WITH A CONCENTRATION OF 5.5%", umd:"TON", precio:0, iva:0, variable:true, usd:true}
-    ]
-  }
+var FONDS = {
+  bmc_mq:   {nombre:"BMC Miguel Quijano",  scb:0.4,  scbEdit:false, bolsa:true,  reserva:0,    tasaDia:false, costoFijo:0},
+  bmc_mb:   {nombre:"BMC Mercado y Bolsa", scb:2.43, scbEdit:true,  bolsa:true,  reserva:0,    tasaDia:false, costoFijo:0},
+  coltef:   {nombre:"Coltefinanciera",     scb:0,    scbEdit:false, bolsa:false, reserva:0,    tasaDia:true,  costoFijo:14700},
+  integra:  {nombre:"Integra",             scb:0,    scbEdit:false, bolsa:false, reserva:0,    tasaDia:false, costoFijo:0},
+  cesion:   {nombre:"Cesion Bank",         scb:0,    scbEdit:false, bolsa:false, reserva:13.5, tasaDia:false, costoFijo:0},
+  servifin: {nombre:"Servifin",            scb:0,    scbEdit:false, bolsa:false, reserva:10,   tasaDia:false, costoFijo:0},
+  irisbank: {nombre:"Irisbank",            scb:0,    scbEdit:false, bolsa:false, reserva:5,    tasaDia:true,  costoFijo:0},
+  liquitech:{nombre:"Liquitech",           scb:0,    scbEdit:false, bolsa:false, reserva:10,   tasaDia:false, costoFijo:0}
 };
 
-var productos = [];
-var pidx = 0;
+var bolsaOn=false, gmfOn=false;
 
-function cop(n){return "$\u00a0"+Math.round(n).toLocaleString("es-CO");}
-function pn(v){return parseFloat(String(v).replace(/,/g,"").trim())||0;}
+function toggleBolsa(){bolsaOn=!bolsaOn;document.getElementById("tog-bolsa").classList.toggle("on",bolsaOn);document.getElementById("l-rete").disabled=bolsaOn;}
+function toggleGmf(){gmfOn=!gmfOn;document.getElementById("tog-gmf").classList.toggle("on",gmfOn);}
+function cop(n){return"$\u00a0"+Math.round(n).toLocaleString("es-CO");}
+function pn(v){return parseFloat(String(v).trim());}
 
-function populateClientes(){
-  var s=document.getElementById("f-cliente");
-  Object.entries(CLIENTES).forEach(function(e){
-    var o=document.createElement("option");
-    o.value=e[0]; o.textContent=e[1].nombre;
-    s.appendChild(o);
-  });
+function populateFonds(){
+  var o="<option value=''>Seleccionar...</option>";
+  Object.entries(FONDS).forEach(function(e){o+="<option value='"+e[0]+"'>"+e[1].nombre+"</option>";});
+  document.getElementById("p-fond").innerHTML=o;
+  document.getElementById("l-fond").innerHTML=o;
 }
 
-function onCliente(){
-  var id=document.getElementById("f-cliente").value;
-  var c=CLIENTES[id];
-  productos=[];
-  renderProds();
-  var ps=document.getElementById("f-prod-sel");
-  ps.innerHTML="<option value=''>Seleccionar producto...</option>";
-  if(!c){document.getElementById("cliente-info").style.display="none";return;}
-  document.getElementById("cliente-info").style.display="block";
-  document.getElementById("ci-nombre").textContent=c.nombre;
-  document.getElementById("ci-nit").textContent=c.nit;
-  document.getElementById("ci-rep").textContent=c.rep;
-  document.getElementById("ci-tel").textContent=c.tel;
-  document.getElementById("ci-dir").textContent=c.dir;
-  document.getElementById("ci-ciudad").textContent=c.ciudad;
-  c.productos.forEach(function(p,i){
-    var o=document.createElement("option");
-    o.value=id+"__"+i;
-    o.textContent=p.desc+(p.variable?" ⚡ precio variable":"");
-    ps.appendChild(o);
-  });
+function setTab(t){
+  var tabs=document.querySelectorAll(".tab");
+  tabs[0].classList.toggle("active",t==="pre");tabs[1].classList.toggle("active",t==="liq");
+  document.getElementById("panel-pre").classList.toggle("active",t==="pre");
+  document.getElementById("panel-liq").classList.toggle("active",t==="liq");
+  window.scrollTo(0,0);
 }
 
-function onProdSel(){
-  var v=document.getElementById("f-prod-sel").value;
-  if(!v)return;
-  var parts=v.split("__");
-  var c=CLIENTES[parts[0]];
-  var p=c.productos[parseInt(parts[1])];
-  productos.push({id:pidx++,desc:p.desc,umd:p.umd,qty:"",precio:p.variable?0:p.precio,iva:p.iva,variable:p.variable,usd:p.usd||false});
-  renderProds();
-  document.getElementById("f-prod-sel").value="";
-}
+function setupFond(px,id){
+  var f=FONDS[id];
+  var nLbl=document.getElementById(px+"-negoc-lbl");
+  var nIn=document.getElementById(px+"-negoc");
+  var sWrap=document.getElementById(px+"-scb-wrap");
+  var sIn=document.getElementById(px+"-scb");
+  var sLbl=document.getElementById(px+"-scb-lbl");
+  var plazoLbl=document.getElementById(px+"-plazo-lbl");
+  var plazoIn=document.getElementById(px+"-plazo");
 
-function addProdManual(){
-  productos.push({id:pidx++,desc:"",umd:"",qty:"",precio:0,iva:19,variable:true,usd:false});
-  renderProds();
-}
+  if(!f){
+    if(sWrap) sWrap.style.display="none";
+    nIn.readOnly=false; nIn.className="";
+    return;
+  }
 
-function delProd(id){
-  productos=productos.filter(function(p){return p.id!==id;});
-  renderProds();
-}
-
-function renderProds(){
-  var b=document.getElementById("prod-body");
-  b.innerHTML="";
-  productos.forEach(function(p,i){
-    var tr=document.createElement("tr");
-    tr.innerHTML=
-      "<td style='color:#888;font-size:12px'>"+(i+1)+"</td>"+
-      "<td><input value='"+escHtml(p.desc)+"' placeholder='Descripción' onchange='productos["+i+"].desc=this.value;recalc()'></td>"+
-      "<td><input inputmode='numeric' value='"+p.qty+"' placeholder='Cant.' onchange='productos["+i+"].qty=this.value;recalc()' style='max-width:90px'></td>"+
-      "<td><input inputmode='decimal' value='"+(p.precio||"")+"' placeholder='"+(p.variable?"Cotizar":"Precio")+"' onchange='productos["+i+"].precio=parseFloat(this.value)||0;recalc()' "+(p.variable?"":"class=''")+"></td>"+
-      "<td><input inputmode='decimal' value='"+p.iva+"' onchange='productos["+i+"].iva=parseFloat(this.value)||0;recalc()' style='max-width:70px'></td>"+
-      "<td id='tot-"+p.id+"' style='color:#E8C96A;font-size:12px;white-space:nowrap'>—</td>"+
-      "<td><button class='del-btn' onclick='delProd("+p.id+")'>✕</button></td>";
-    b.appendChild(tr);
-  });
-  recalc();
-}
-
-function escHtml(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");}
-
-function recalc(){
-  var bruto=0,ivaTotal=0;
-  productos.forEach(function(p){
-    var qty=pn(p.qty),pr=pn(p.precio),iva=pn(p.iva);
-    var vb=qty*pr, vi=vb*(iva/100), vt=vb+vi;
-    bruto+=vb; ivaTotal+=vi;
-    var el=document.getElementById("tot-"+p.id);
-    if(el) el.textContent=qty&&pr?cop(vt):"—";
-  });
-  var facial=bruto+ivaTotal;
-  var w=document.getElementById("totales-wrap");
-  if(productos.length>0&&facial>0){
-    w.style.display="block";
-    document.getElementById("t-bruto").textContent=cop(bruto);
-    document.getElementById("t-iva").textContent=cop(ivaTotal);
-    document.getElementById("t-facial").textContent=cop(facial);
+  // Plazo: días o meses según fondeador
+  if(f.tasaDia){
+    plazoLbl.textContent="Plazo (días)";
+    plazoIn.placeholder="ej. 180";
   } else {
-    w.style.display="none";
+    plazoLbl.textContent="Plazo (meses)";
+    plazoIn.placeholder="ej. 6";
+  }
+
+  // Tasa label en liquidación final
+  if(px==="l"){
+    var tasaLbl=document.getElementById("l-tasa-lbl");
+    tasaLbl.textContent=f.tasaDia?"Tasa anual (%)":"Tasa mensual real de subasta (%)";
+    document.getElementById("l-tasa").placeholder=f.tasaDia?"ej. 16":"ej. 1.8";
+
+    // Costo fijo
+    var cfW=document.getElementById("l-cf-wrap"), cfI=document.getElementById("l-cf");
+    if(f.costoFijo>0){cfW.style.display="block"; cfI.value=f.costoFijo.toLocaleString("es-CO");}
+    else{cfW.style.display="none"; cfI.value="";}
+  }
+
+  if(f.reserva>0){
+    nLbl.innerHTML='Valor de negociación ($) <span>auto — reserva '+f.reserva+'%</span>';
+    nIn.readOnly=true; nIn.className="ro";
+  } else {
+    nLbl.innerHTML='Valor de negociación ($)';
+    nIn.readOnly=false; nIn.className="";
+  }
+  if(f.bolsa){
+    sWrap.style.display="block"; sIn.value=String(f.scb);
+    sIn.readOnly=!f.scbEdit; sIn.className=f.scbEdit?"sm":"sm ro";
+    sLbl.innerHTML='Costo SCB (%)'+((!f.scbEdit)?' <span style="color:#555">fijo</span>':"");
+  } else {
+    sWrap.style.display="none";
   }
 }
 
-function numLetras(n){
-  // simplified — returns formatted number
-  return n.toLocaleString("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:2});
+function pOnFond(){setupFond("p",document.getElementById("p-fond").value);document.getElementById("p-negoc").value="";document.getElementById("p-result").innerHTML="";}
+function pOnFacial(){
+  var id=document.getElementById("p-fond").value,f=FONDS[id];
+  if(f&&f.reserva>0){var v=pn(document.getElementById("p-facial").value);if(!isNaN(v))document.getElementById("p-negoc").value=String(Math.round(v*(1-f.reserva/100)));}
+}
+function lOnFond(){setupFond("l",document.getElementById("l-fond").value);document.getElementById("l-negoc").value="";document.getElementById("l-result").innerHTML="";}
+function lOnFacial(){
+  var id=document.getElementById("l-fond").value,f=FONDS[id];
+  if(f&&f.reserva>0){var v=pn(document.getElementById("l-facial").value);if(!isNaN(v))document.getElementById("l-negoc").value=String(Math.round(v*(1-f.reserva/100)));}
 }
 
-function generarOrden(){
-  var fid=document.getElementById("f-cliente").value;
-  var orden=document.getElementById("f-orden").value.trim();
-  var fecha=document.getElementById("f-fecha").value;
-  var tipo=document.getElementById("f-tipo").value;
-  var plazo=document.getElementById("f-plazo").value.trim();
-  var factComp=document.getElementById("f-factcomp").value.trim();
-  var factVenta=document.getElementById("f-factventa").value.trim();
-  var fond=document.getElementById("f-fond").value;
-  var tasa=pn(document.getElementById("f-tasa").value);
-  var dif=pn(document.getElementById("f-dif").value);
-  var bolsaPct=pn(document.getElementById("f-bolsa").value);
-  var scbPct=pn(document.getElementById("f-scb").value);
-  var gmf=document.getElementById("f-gmf").value;
-  var rete=document.getElementById("f-rete").value;
-  var tributario=document.getElementById("f-tributario").value;
-  var garantia=document.getElementById("f-garantia").value;
-  var obs=document.getElementById("f-obs").value;
-  var errEl=document.getElementById("f-err");
+function mkrow(l,v,sub){return"<div class='row"+(sub?" sub":"")+"'><span class='l'>"+l+"</span><span class='r'>"+v+"</span></div>";}
 
-  if(!fid||!orden||!fecha||!plazo||!fond||tasa<=0||dif<=0||productos.length===0){
-    errEl.textContent="Completa todos los campos obligatorios (cliente, orden, plazo, fondeador, tasa, diferencial y al menos un producto).";
-    errEl.style.display="block"; return;
+function calcPre(){
+  var fid=document.getElementById("p-fond").value;
+  var Vf=pn(document.getElementById("p-facial").value);
+  var Vn=pn(document.getElementById("p-negoc").value);
+  var n=pn(document.getElementById("p-plazo").value);
+  var scbEl=document.getElementById("p-scb");
+  var scbP=scbEl?(pn(scbEl.value)||0):0;
+  var t1=pn(document.getElementById("p-t1").value);
+  var t2=pn(document.getElementById("p-t2").value);
+  var t3=pn(document.getElementById("p-t3").value);
+  var e=document.getElementById("p-err");
+  if(!fid||isNaN(Vf)||isNaN(Vn)||isNaN(n)||Vf<=0||Vn<=0||n<=0){
+    e.textContent="Completa todos los campos.";e.style.display="block";
+    document.getElementById("p-result").innerHTML="";return;
   }
-  errEl.style.display="none";
-
-  var c=CLIENTES[fid];
-  var bruto=0,ivaTotal=0;
-  var prodsData=productos.map(function(p,i){
-    var qty=pn(p.qty),pr=pn(p.precio),iva=pn(p.iva);
-    var vb=qty*pr,vi=vb*(iva/100),vt=vb+vi;
-    bruto+=vb; ivaTotal+=vi;
-    return {idx:i+1,desc:p.desc,qty:qty.toLocaleString("es-CO"),precio:pr,iva:iva,vbruto:vb,viva:vi,vtotal:vt};
+  e.style.display="none";
+  var f=FONDS[fid];
+  // Para tasaDia: t1/t2/t3 son tasa anual, intereses = Vn*(t/100)*(n/365)
+  // Para meses: intereses = Vn*(t/100)*n
+  var ESC=[{l:"Favorable",c:"#4CAF50",tm:t1/100},{l:"Base",c:"#C9A84C",tm:t2/100},{l:"Conservador",c:"#E07B39",tm:t3/100}];
+  var plazoLabel=f.tasaDia?n+" días":n+" meses";
+  var h="<div class='info-bar'><strong>"+f.nombre+"</strong><br>Facial: <strong>"+cop(Vf)+"</strong> &nbsp;·&nbsp; Negociación: <strong>"+cop(Vn)+"</strong> &nbsp;·&nbsp; Plazo: <strong>"+plazoLabel+"</strong></div>";
+  h+="<div class='esc-grid'>";
+  ESC.forEach(function(es){
+    var bM=f.bolsa?Vn*0.002:0,ibM=bM*0.19;
+    var sM=f.bolsa?Vn*(scbP/100):0,isM=sM*0.19;
+    var int=f.tasaDia ? Vn*es.tm*(n/365) : Vn*es.tm*n;
+    var gir=Vn-bM-ibM-sM-isM-int;
+    h+="<div class='esc-card' style='border:1px solid "+es.c+"55'>";
+    h+="<div class='esc-title' style='color:"+es.c+"'>"+es.l+"</div>";
+    if(f.tasaDia){
+      h+=mkrow("Tasa anual",(es.tm*100).toFixed(2)+"%");
+      h+=mkrow("Tasa efectiva período",(es.tm*n/365*100).toFixed(4)+"%");
+    } else {
+      h+=mkrow("Tasa mensual",(es.tm*100).toFixed(2)+"%");
+      h+=mkrow("Tasa anual",(es.tm*12*100).toFixed(2)+"%");
+    }
+    if(bM>0)h+=mkrow("Costos bolsa (0.2%)","- "+cop(bM));
+    if(ibM>0)h+=mkrow("IVA bolsa (19%)","- "+cop(ibM));
+    if(sM>0)h+=mkrow("SCB ("+scbP+"%)","- "+cop(sM));
+    if(isM>0)h+=mkrow("IVA SCB (19%)","- "+cop(isM));
+    h+=mkrow("Intereses","- "+cop(int));
+    h+="<div class='esc-total'><span style='color:"+es.c+";font-weight:600;font-size:13px'>A girar</span><span style='color:#E8C96A;font-weight:700;font-size:17px'>"+cop(gir)+"</span></div>";
+    h+="</div>";
   });
-  var facial=bruto+ivaTotal;
-
-  // Liquidacion fondeador
-  var vNeg=facial*(1-(tasa/100));
-  var cBolsa=facial*(bolsaPct/100);
-  var ivaBolsa=cBolsa*0.19;
-  var cSCB=facial*(scbPct/100);
-  var ivaSCB=cSCB*0.19;
-  var giroFond=vNeg-cBolsa-ivaBolsa-cSCB-ivaSCB;
-
-  // Liquidacion cliente
-  var difVal=facial*(dif/100);
-  var ivaDesc=facial*(dif/100)*0.19;
-  var reteVal=rete==="exenta"?0:giroFond*(pn(rete)/100);
-  var antesGMF=giroFond-difVal-ivaDesc-reteVal;
-  var gmfVal=gmf==="gtc"?antesGMF*0.004:0;
-  var giroCliente=antesGMF-gmfVal;
-  var ingreso=difVal;
-
-  var fechaObj=new Date(fecha+"T12:00:00");
-  var meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  var fechaStr=fechaObj.getDate()+" de "+meses[fechaObj.getMonth()]+" de "+fechaObj.getFullYear();
-
-  var prodRows=prodsData.map(function(p){
-    return "<tr><td>"+p.idx+"</td><td>"+p.desc+"</td><td style='text-align:right'>"+p.qty+"</td><td style='text-align:right'>$"+Math.round(p.precio).toLocaleString("es-CO")+"</td><td style='text-align:right'>$"+Math.round(p.vbruto).toLocaleString("es-CO")+"</td><td style='text-align:right'>$"+Math.round(p.viva).toLocaleString("es-CO")+"</td><td style='text-align:right'>$"+Math.round(p.vtotal).toLocaleString("es-CO")+"</td></tr>";
-  }).join("");
-
-  var h="<div class='doc' id='doc-print'>";
-  h+="<button class='btn no-print' style='max-width:220px;margin-bottom:16px' onclick='window.print()'>🖨️ Imprimir / Guardar PDF</button>";
-  h+="<button class='btn btn-sec no-print' style='max-width:220px;margin-bottom:16px;margin-left:10px' onclick='document.getElementById(\"doc-output\").innerHTML=\"\";document.querySelector(\".form-section\").style.display=\"block\"'>← Editar</button>";
-
-  h+="<div class='doc-header'><div><div class='doc-gtco'>GTCO</div><div class='doc-sub'>GLOBAL TRADE COMMERCE S.A.S.</div><div class='doc-sub'>NIT: 901.648.628-5 | Medellín, Colombia</div></div>";
-  h+="<div style='text-align:center'><div style='font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:2px'>Orden de Operación</div><div class='doc-orden'>"+orden+"</div><div class='doc-badge'>"+tipo+"</div></div>";
-  h+="<div class='doc-meta'><div>Fecha: <strong>"+fechaStr+"</strong></div><div>Plazo: <strong>"+plazo+"</strong></div><div>Diferencial GTC: <strong>"+dif+"%</strong></div><div>Fact. Compra: <strong>"+factComp+"</strong></div><div>Fact. Venta: <strong>"+factVenta+"</strong></div></div></div>";
-
-  h+="<h2>I. PARTES</h2><div class='doc-grid2'>";
-  h+="<div class='doc-card'><div class='doc-card-title'>Vendedor</div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Razón Social:</span><strong>"+c.nombre+"</strong></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>NIT:</span><span>"+c.nit+"</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Rep. Legal:</span><span>"+c.rep+"</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Cargo:</span><span>"+c.cargo+"</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Dirección:</span><span>"+c.dir+", "+c.ciudad+"</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Teléfono:</span><span>"+c.tel+"</span></div></div>";
-
-  h+="<div class='doc-card'><div class='doc-card-title'>Comprador</div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Razón Social:</span><strong>GLOBAL TRADE COMMERCE S.A.S.</strong></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>NIT:</span><span>901.648.628-5</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Rep. Legal:</span><span>CAMILA ARENAS ALCARAZ</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>C.C.:</span><span>1.006.293.320</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Dirección:</span><span>Cr 42 No. 3 Sur 81, Torre 1, Piso 15, Medellín</span></div>";
-  h+="<div class='doc-row'><span class='doc-lbl'>Correo:</span><span>camila.direccioncomercial@comercioglobal.co</span></div>";
-  h+="<div class='doc-row' style='margin-top:6px'><span class='doc-lbl'>Proveedor de Liquidez:</span><strong>"+fond+"</strong></div></div></div>";
-
-  h+="<h2>II. INVENTARIO</h2>";
-  h+="<table class='doc-table'><thead><tr><th>#</th><th>Producto</th><th style='text-align:right'>Cantidad</th><th style='text-align:right'>Vr. Unitario</th><th style='text-align:right'>Vr. Bruto</th><th style='text-align:right'>IVA</th><th style='text-align:right'>Vr. Total</th></tr></thead><tbody>";
-  h+=prodRows;
-  h+="<tr class='doc-tr-sub'><td colspan='4' style='text-align:right'>Subtotal</td><td style='text-align:right'>$"+Math.round(bruto).toLocaleString("es-CO")+"</td><td style='text-align:right'>$"+Math.round(ivaTotal).toLocaleString("es-CO")+"</td><td></td></tr>";
-  h+="<tr class='doc-tr-facial'><td colspan='5' style='text-align:right'>VALOR FACIAL FACTURA GTC</td><td colspan='2' style='text-align:right'>$"+Math.round(facial).toLocaleString("es-CO")+"</td></tr>";
-  h+="</tbody></table>";
-
-  h+="<h2>III. PRELIQUIDACIÓN</h2><div class='doc-grid2'>";
-  h+="<div><div style='font-weight:bold;color:#1a3a5c;font-size:10px;margin-bottom:6px'>A. DESCUENTO CON FONDEADOR</div><table class='doc-table'><tbody>";
-  h+="<tr><td>Valor facial Factura GTC</td><td style='text-align:right'>$"+Math.round(facial).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr><td class='doc-liq-neg'>Tasa descuento ("+tasa+"%)</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(facial*tasa/100).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr class='doc-liq-bold'><td>Valor neto negociación</td><td style='text-align:right'>$"+Math.round(vNeg).toLocaleString("es-CO")+"</td></tr>";
-  if(cBolsa>0){h+="<tr><td class='doc-liq-neg'>Costos bolsa ("+bolsaPct+"%)</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(cBolsa).toLocaleString("es-CO")+"</td></tr>";}
-  if(ivaBolsa>0){h+="<tr><td class='doc-liq-neg'>IVA costos bolsa</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(ivaBolsa).toLocaleString("es-CO")+"</td></tr>";}
-  if(cSCB>0){h+="<tr><td class='doc-liq-neg'>Costos SCB ("+scbPct+"%)</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(cSCB).toLocaleString("es-CO")+"</td></tr>";}
-  if(ivaSCB>0){h+="<tr><td class='doc-liq-neg'>IVA SCB</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(ivaSCB).toLocaleString("es-CO")+"</td></tr>";}
-  h+="<tr class='doc-liq-total'><td>GIRO FONDEADOR → GTC</td><td style='text-align:right'>$"+Math.round(giroFond).toLocaleString("es-CO")+"</td></tr>";
-  h+="</tbody></table></div>";
-
-  h+="<div><div style='font-weight:bold;color:#1a3a5c;font-size:10px;margin-bottom:6px'>B. GIRO GTC → VENDEDOR</div><table class='doc-table'><tbody>";
-  h+="<tr><td>Giro recibido del fondeador</td><td style='text-align:right'>$"+Math.round(giroFond).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr><td class='doc-liq-neg'>Diferencial GTC ("+dif+"%)</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(difVal).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr><td class='doc-liq-neg'>IVA descontable</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(ivaDesc).toLocaleString("es-CO")+"</td></tr>";
-  if(reteVal>0){h+="<tr><td class='doc-liq-neg'>Retefuente ("+rete+"%)</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(reteVal).toLocaleString("es-CO")+"</td></tr>";}
-  h+="<tr class='doc-liq-bold'><td>Valor antes de GMF</td><td style='text-align:right'>$"+Math.round(antesGMF).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr><td class='doc-liq-neg'>GMF — cargo: "+(gmf==="gtc"?"GTC":"Cliente")+"</td><td class='doc-liq-neg' style='text-align:right'>-$"+Math.round(gmfVal>0?gmfVal:antesGMF*0.004).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr class='doc-liq-total'><td>GIRO GTC → "+c.nombre+"</td><td style='text-align:right'>$"+Math.round(giroCliente).toLocaleString("es-CO")+"</td></tr>";
-  h+="<tr class='doc-liq-ingreso'><td><strong>INGRESO GTC ("+dif+"%)</strong></td><td style='text-align:right'><strong>$"+Math.round(ingreso).toLocaleString("es-CO")+"</strong></td></tr>";
-  h+="</tbody></table></div></div>";
-
-  h+="<h2>IV. CONDICIONES</h2><div class='doc-grid2'>";
-  h+="<div class='doc-card'><div class='doc-card-title'>Tributario</div><div>"+tributario+"</div></div>";
-  h+="<div class='doc-card'><div class='doc-card-title'>Garantías y GMF</div><div>"+garantia+"</div><div style='margin-top:4px'>GMF: a cargo de <strong>"+(gmf==="gtc"?"GTC":"Cliente")+"</strong></div></div></div>";
-
-  h+="<h2>V. CESIÓN DE DERECHOS ECONÓMICOS</h2>";
-  h+="<div class='doc-card'>La Factura <strong>"+factVenta+"</strong> es cedida en su totalidad a <strong>"+fond+"</strong>. Al vencimiento (<strong>"+plazo+"</strong>), el Vendedor pagará directamente al Proveedor de Liquidez <strong>$"+Math.round(facial).toLocaleString("es-CO")+" COP</strong>. GTC no recibirá dicho pago. Tipo de factoring: <strong>"+tipo+"</strong>.</div>";
-
-  if(obs){h+="<h2>VI. OBSERVACIONES</h2><div class='doc-card'>"+obs+"</div>";}
-
-  h+="<div class='doc-firmas'><div><div style='font-size:10px;color:#666;margin-bottom:2px'>EL VENDEDOR</div><div class='doc-firma-line'><strong>"+c.rep+"</strong><br>"+c.cargo+"<br>"+c.nombre+"<br>NIT: "+c.nit+"</div></div>";
-  h+="<div><div style='font-size:10px;color:#666;margin-bottom:2px'>EL COMPRADOR</div><div class='doc-firma-line'><strong>CAMILA ARENAS ALCARAZ</strong><br>Gerente y Representante Legal<br>GLOBAL TRADE COMMERCE S.A.S.<br>NIT: 901.648.628-5</div></div></div>";
-
-  h+="<div class='doc-footer'>Documento generado el "+fechaStr+" — Global Trade Commerce S.A.S. — Confidencial</div>";
   h+="</div>";
-
-  document.getElementById("doc-output").innerHTML=h;
-  document.querySelector(".form-section").style.display="none";
-  setTimeout(function(){document.getElementById("doc-output").scrollIntoView({behavior:"smooth",block:"start"});},100);
+  document.getElementById("p-result").innerHTML=h;
+  setTimeout(function(){document.getElementById("p-result").scrollIntoView({behavior:"smooth",block:"start"});},100);
 }
 
-populateClientes();
+function calcLiq(){
+  var fid=document.getElementById("l-fond").value;
+  var Vf=pn(document.getElementById("l-facial").value);
+  var Vn=pn(document.getElementById("l-negoc").value);
+  var tasaRaw=pn(document.getElementById("l-tasa").value);
+  var n=pn(document.getElementById("l-plazo").value);
+  var ivaP=pn(document.getElementById("l-iva").value);
+  var fcP=pn(document.getElementById("l-factcl").value)/100;
+  var reteP=pn(document.getElementById("l-rete").value);
+  var scbEl=document.getElementById("l-scb");
+  var scbP=scbEl?(pn(scbEl.value)||0):0;
+  var e=document.getElementById("l-err");
+  if(!fid||isNaN(Vf)||isNaN(Vn)||isNaN(tasaRaw)||isNaN(n)||Vf<=0||Vn<=0||n<=0||tasaRaw<=0){
+    e.textContent="Completa todos los campos.";e.style.display="block";
+    document.getElementById("l-result").innerHTML="";return;
+  }
+  e.style.display="none";
+  var f=FONDS[fid], iva=ivaP/100;
+
+  // Intereses según tipo de tasa
+  var intM, tasaLabel;
+  if(f.tasaDia){
+    // tasaRaw = tasa anual %, n = días
+    intM = Vn*(tasaRaw/100)*(n/365);
+    tasaLabel=tasaRaw.toFixed(2)+"% anual × "+n+" días";
+  } else {
+    // tasaRaw = tasa mensual %, n = meses
+    intM = Vn*(tasaRaw/100)*n;
+    tasaLabel=tasaRaw.toFixed(2)+"% × "+n+" meses";
+  }
+
+  // Costo fijo
+  var cf=f.costoFijo||0;
+  var cfSinIva=cf>0?Math.round(cf/1.19):0;
+  var cfIva=cf-cfSinIva;
+
+  var resM=Vf-Vn;
+  var bM=f.bolsa?Vn*0.002:0, ibM=bM*0.19;
+  var sM=f.bolsa?Vn*(scbP/100):0, isM=sM*0.19;
+  var girarF=Vn-bM-ibM-sM-isM-intM-cf;
+
+  var factGTC=Vf, factGTCsi=Vf/(1+iva), ivaGTC=factGTC-factGTCsi;
+  var factCl=Vf*fcP, factClSi=factCl/(1+iva), ivaCl=factCl-factClSi;
+  var difGTC=factGTC-factCl, ivaDesc=ivaGTC-ivaCl;
+  var rete=bolsaOn?0:factClSi*(reteP/100);
+  var antesGMF=girarF-difGTC-ivaDesc-rete;
+  var gmf=gmfOn?0:antesGMF*0.004;
+  var girarCl=antesGMF-gmf;
+
+  var h="<div class='result'>";
+  h+="<div class='res-title'>Liquidación final — "+f.nombre+"</div>";
+  h+="<div class='divider'>FONDEADOR</div>";
+  h+=mkrow("Valor facial GTC",cop(Vf));
+  if(resM>0)h+=mkrow("Valor de reserva","- "+cop(resM));
+  h+=mkrow("Valor de negociación",cop(Vn));
+  if(bM>0)h+=mkrow("Costos de bolsa (0.2%)","- "+cop(bM));
+  if(ibM>0)h+=mkrow("IVA costos de bolsa","- "+cop(ibM));
+  if(sM>0)h+=mkrow("Costos SCB ("+scbP+"%)","- "+cop(sM));
+  if(isM>0)h+=mkrow("IVA costos SCB","- "+cop(isM));
+  h+=mkrow("Intereses ("+tasaLabel+")","- "+cop(intM));
+  if(cf>0){
+    h+=mkrow("Costo fijo (transferencia bancaria)","- "+cop(cf));
+    h+=mkrow("Sin IVA",cop(cfSinIva),true);
+    h+=mkrow("IVA (19%)",cop(cfIva),true);
+  }
+  h+="<div class='total2'><span class='l'>Valor girado por el fondeador</span><span class='r'>"+cop(girarF)+"</span></div>";
+  h+="<div class='divider'>CLIENTE</div>";
+  h+=mkrow("Factura GTC con IVA ("+ivaP+"%)",cop(factGTC));
+  h+=mkrow("Factura GTC sin IVA",cop(factGTCsi),true);
+  h+=mkrow("IVA factura GTC",cop(ivaGTC),true);
+  h+=mkrow("Factura cliente ("+(fcP*100)+"% del facial)",cop(factCl));
+  h+=mkrow("Factura cliente sin IVA",cop(factClSi),true);
+  h+=mkrow("IVA factura cliente",cop(ivaCl),true);
+  h+=mkrow("Diferencial Global",cop(difGTC));
+  h+=mkrow("IVA descontable",cop(ivaDesc));
+  h+=mkrow(bolsaOn?"Retefuente (exenta — bolsa)":"Retefuente ("+reteP+"%)",bolsaOn?"$\u00a00":"- "+cop(rete));
+  h+=mkrow("Valor a girar antes de GMF",cop(antesGMF));
+  h+=mkrow(gmfOn?"GMF (asumido por GTC)":"GMF (4 × mil)",gmfOn?"$\u00a00":"- "+cop(gmf));
+  h+="<div class='total'><span class='l'>Valor a girar al cliente</span><span class='r'>"+cop(girarCl)+"</span></div>";
+  h+="</div>";
+  document.getElementById("l-result").innerHTML=h;
+  setTimeout(function(){document.getElementById("l-result").scrollIntoView({behavior:"smooth",block:"start"});},100);
+}
+
+populateFonds();
 </script>
 </body>
 </html>
-
-
