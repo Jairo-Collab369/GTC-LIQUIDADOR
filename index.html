@@ -414,7 +414,7 @@
         <div class="logo">G</div>
         <div>
             <div class="brand">GLOBAL TRADE COMMERCE</div>
-            <div class="sub">Agente Liquidador v2.0</div>
+            <div class="sub">Agente Liquidador v2.1</div>
         </div>
     </div>
     <div class="wrap">
@@ -527,7 +527,7 @@
 
             <div id="l-cf-wrap" style="display:none">
                 <div class="lbl">
-                    Costo fijo fondeador (con IVA) 
+                    Costo fijo fondeador (con IVA)
                     <span>transferencia bancaria</span>
                 </div>
                 <input id="l-cf" class="sm ro" inputmode="numeric" readonly>
@@ -697,7 +697,7 @@
         document.getElementById("tog-gmf").classList.toggle("on", gmfOn);
     }
     function cop(n) {
-        return "$\u00a0" + Math.round(n).toLocaleString("es-CO");
+        return "$ " + Math.round(n).toLocaleString("es-CO");
     }
     function pn(v) {
         return parseFloat(String(v).trim());
@@ -725,10 +725,16 @@
         if (!isNaN(v) && v > 0)
             document.getElementById("p-ea" + n).value = mensualToEa(v).toFixed(4);
     }
+
+    // FIX #5: syncLEaToM y syncLMToEa ahora actualizan también el campo l-tp
     function syncLEaToM() {
         var v = pn(document.getElementById("l-tea").value);
-        if (!isNaN(v) && v > 0)
+        var dias = pn(document.getElementById("l-plazo").value);
+        if (!isNaN(v) && v > 0) {
             document.getElementById("l-tm").value = eaToMensual(v).toFixed(4);
+            if (!isNaN(dias) && dias > 0)
+                document.getElementById("l-tp").value = (eaToPeriodo(v, dias) * 100).toFixed(6);
+        }
     }
     function calcTasaInversa() {
         var vgiro = pn(document.getElementById("l-vgiro").value);
@@ -760,10 +766,16 @@
             document.getElementById("l-tm").value = eaToMensual(ea).toFixed(6);
         }
     }
+    // FIX #5: syncLMToEa ahora actualiza también el campo l-tp
     function syncLMToEa() {
         var v = pn(document.getElementById("l-tm").value);
-        if (!isNaN(v) && v > 0)
-            document.getElementById("l-tea").value = mensualToEa(v).toFixed(4);
+        var dias = pn(document.getElementById("l-plazo").value);
+        if (!isNaN(v) && v > 0) {
+            var ea = mensualToEa(v);
+            document.getElementById("l-tea").value = ea.toFixed(4);
+            if (!isNaN(dias) && dias > 0)
+                document.getElementById("l-tp").value = (eaToPeriodo(ea, dias) * 100).toFixed(6);
+        }
     }
 
     function populateFonds() {
@@ -1014,11 +1026,14 @@
                 h += "<div class='esc-total'><span style='color:" + es.c + ";font-weight:600;font-size:13px'>Giro del fondeador</span><span style='color:#E8C96A;font-weight:700;font-size:17px'>" + cop(giroFond) + "</span></div>";
                 h += "</div>";
             } else if (f.tipo === "anual") {
+                // FIX #2: se descuenta el costo fijo (Coltefinanciera) en la preliquidación
+                var preCf = f.costoFijo || 0;
                 intM = Vn * (es.t) * ((dias) / 365);
-                giroFond = Vn - intM;
+                giroFond = Vn - intM - preCf;
                 h += "<div class='esc-card' style='border:1px solid " + es.c + "55'>";
                 h += "<div class='esc-title' style='color:" + es.c + "'>" + es.l + " — " + (es.t * 100).toFixed(2) + "% anual</div>";
                 h += mkrow("Intereses (" + dias + " días)", "- " + cop(intM));
+                if (preCf > 0) h += mkrow("Costo fijo (transferencia)", "- " + cop(preCf));
                 h += "<div class='esc-total'><span style='color:" + es.c + ";font-weight:600;font-size:13px'>Giro del fondeador</span><span style='color:#E8C96A;font-weight:700;font-size:17px'>" + cop(giroFond) + "</span></div>";
                 h += "</div>";
             } else {
@@ -1132,9 +1147,12 @@
         var difGTC = factGTC - factCl,
             ivaDesc = ivaGTC - ivaCl;
         var rete = bolsaOn ? 0 : factClSi * (reteP / 100);
-        var antesGMF = girarF - difGTC - ivaDesc - rete;
+
+        // FIX #1: ivaDesc ya está incluido en difGTC — no se resta por separado
+        var antesGMF = girarF - difGTC - rete;
         var gmf = gmfOn ? 0 : antesGMF * 0.004;
         var girarCl = antesGMF - gmf;
+        var gmfGTC = gmfOn ? Math.round(antesGMF * 0.004) : 0;
 
         var h = "<div class='result'>";
         h += "<div class='res-title'>Liquidación final — " + f.nombre + "</div>";
@@ -1173,14 +1191,19 @@
         h += mkrow("Factura cliente (" + (fcP * 100) + "% del facial)", cop(factCl));
         h += mkrow("Factura cliente sin IVA", cop(factClSi), true);
         h += mkrow("IVA factura cliente", cop(ivaCl), true);
-        h += mkrow("Diferencial Global", cop(difGTC));
-        h += mkrow("IVA descontable", cop(ivaDesc));
-        h += mkrow(bolsaOn ? "Retefuente (exenta — bolsa)" : "Retefuente (" + reteP + "%)", bolsaOn ? "$\u00a00" : "- " + cop(rete));
+        // FIX #3: "Diferencial GTC" con signo negativo; "IVA descontable" como sub-fila informativa
+        h += mkrow("Diferencial GTC", "- " + cop(difGTC));
+        h += mkrow("IVA descontable (dentro del diferencial)", cop(ivaDesc), true);
+        h += mkrow(bolsaOn ? "Retefuente (exenta — bolsa)" : "Retefuente (" + reteP + "%)", bolsaOn ? "$ 0" : "- " + cop(rete));
         h += mkrow("Valor a girar antes de GMF", cop(antesGMF));
-        h += mkrow(gmfOn ? "GMF (asumido por GTC)" : "GMF (4 × mil)", gmfOn ? "$\u00a00" : "- " + cop(gmf));
+        h += mkrow(gmfOn ? "GMF (asumido por GTC)" : "GMF (4 × mil)", gmfOn ? "$ 0" : "- " + cop(gmf));
         h += "<div class='total'><span class='l'>Valor a girar al cliente</span><span class='r'>" + cop(girarCl) + "</span></div>";
+        // FIX #4: sección Ingreso GTC con desglose completo
         h += "<div class='divider'>INGRESO GTC</div>";
         h += mkrow("Diferencial bruto", cop(difGTC));
+        h += mkrow("Base sin IVA", cop(Math.round(factGTCsi - factClSi)), true);
+        h += mkrow("IVA descontable", cop(Math.round(ivaDesc)), true);
+        if (gmfGTC > 0) h += mkrow("GMF asumido por GTC", "- " + cop(gmfGTC));
         h += "</div>";
         document.getElementById("l-result").innerHTML = h;
         setTimeout(function() {
