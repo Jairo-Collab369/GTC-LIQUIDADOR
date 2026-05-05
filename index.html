@@ -570,14 +570,8 @@
                 <option value="5">5%</option>
                 <option value="19">19%</option>
             </select>
-            <div class="lbl">Factura cliente (% del facial GTC)</div>
-            <select id="l-factcl" class="sm">
-                <option value="96">96.0%</option>
-                <option value="96.5">96.5%</option>
-                <option value="97">97.0%</option>
-                <option value="97.5">97.5%</option>
-                <option value="98">98.0%</option>
-            </select>
+            <div class="lbl">Diferencial GTC (%)</div>
+            <input id="l-dif" class="sm" inputmode="decimal" placeholder="ej. 3">
             <div class="lbl">Retefuente</div>
             <select id="l-rete" class="sm">
                 <option value="0">0%</option>
@@ -1066,7 +1060,7 @@
         var Vn = pn(document.getElementById("l-negoc").value);
         var dias = pn(document.getElementById("l-plazo").value);
         var ivaP = pn(document.getElementById("l-iva").value);
-        var fcP = pn(document.getElementById("l-factcl").value) / 100;
+        var dif = pn(document.getElementById("l-dif").value);
         var reteP = pn(document.getElementById("l-rete").value);
         var scbP = pn(document.getElementById("l-scb") ? document.getElementById("l-scb").value : 0) || 0;
         var e = document.getElementById("l-err");
@@ -1138,18 +1132,14 @@
             girarF = Vn - intM - cf;
         }
 
-        var factGTC = Vf,
-            factGTCsi = Vf / (1 + iva),
-            ivaGTC = factGTC - factGTCsi;
-        var factCl = Vf * fcP,
-            factClSi = factCl / (1 + iva),
-            ivaCl = factCl - factClSi;
-        var difGTC = factGTC - factCl,
-            ivaDesc = ivaGTC - ivaCl;
-        var rete = bolsaOn ? 0 : factClSi * (reteP / 100);
+        var factGTCsi = Vf / (1 + iva),
+            ivaGTC = Vf - factGTCsi;
+        var difVal = Vf * (dif / 100);
+        var ivaDesc = ivaGTC * (dif / 100);
+        var factClBase = factGTCsi * (1 - dif / 100);
+        var rete = bolsaOn ? 0 : factClBase * (reteP / 100);
 
-        // FIX #1: ivaDesc ya está incluido en difGTC — no se resta por separado
-        var antesGMF = girarF - difGTC - rete;
+        var antesGMF = girarF - difVal - ivaDesc - rete;
         var gmf = gmfOn ? 0 : antesGMF * 0.004;
         var girarCl = antesGMF - gmf;
         var gmfGTC = gmfOn ? Math.round(antesGMF * 0.004) : 0;
@@ -1185,23 +1175,20 @@
 
         h += "<div class='total2'><span class='l'>Valor girado por el fondeador</span><span class='r'>" + cop(girarF) + "</span></div>";
         h += "<div class='divider'>CLIENTE</div>";
-        h += mkrow("Factura GTC con IVA (" + ivaP + "%)", cop(factGTC));
-        h += mkrow("Factura GTC sin IVA", cop(factGTCsi), true);
+        h += mkrow("Valor facial GTC con IVA (" + ivaP + "%)", cop(Vf));
+        h += mkrow("Valor facial GTC sin IVA", cop(factGTCsi), true);
         h += mkrow("IVA factura GTC", cop(ivaGTC), true);
-        h += mkrow("Factura cliente (" + (fcP * 100) + "% del facial)", cop(factCl));
-        h += mkrow("Factura cliente sin IVA", cop(factClSi), true);
-        h += mkrow("IVA factura cliente", cop(ivaCl), true);
-        // FIX #3: "Diferencial GTC" con signo negativo; "IVA descontable" como sub-fila informativa
-        h += mkrow("Diferencial GTC", "- " + cop(difGTC));
-        h += mkrow("IVA descontable (dentro del diferencial)", cop(ivaDesc), true);
+        h += mkrow("Diferencial GTC (" + dif + "% s/facial)", "- " + cop(difVal));
+        h += mkrow("Factura cliente (" + (100 - dif).toFixed(1) + "%)", cop(Math.round(Vf - difVal)), true);
+        h += mkrow("IVA descontable (ret. DIAN)", "- " + cop(ivaDesc));
         h += mkrow(bolsaOn ? "Retefuente (exenta — bolsa)" : "Retefuente (" + reteP + "%)", bolsaOn ? "$ 0" : "- " + cop(rete));
         h += mkrow("Valor a girar antes de GMF", cop(antesGMF));
         h += mkrow(gmfOn ? "GMF (asumido por GTC)" : "GMF (4 × mil)", gmfOn ? "$ 0" : "- " + cop(gmf));
         h += "<div class='total'><span class='l'>Valor a girar al cliente</span><span class='r'>" + cop(girarCl) + "</span></div>";
         // FIX #4: sección Ingreso GTC con desglose completo
         h += "<div class='divider'>INGRESO GTC</div>";
-        h += mkrow("Diferencial bruto", cop(difGTC));
-        h += mkrow("Base sin IVA", cop(Math.round(factGTCsi - factClSi)), true);
+        h += mkrow("Diferencial bruto", cop(difVal));
+        h += mkrow("Base sin IVA", cop(Math.round(factGTCsi * (dif / 100))), true);
         h += mkrow("IVA descontable", cop(Math.round(ivaDesc)), true);
         if (gmfGTC > 0) h += mkrow("GMF asumido por GTC", "- " + cop(gmfGTC));
         h += "</div>";
