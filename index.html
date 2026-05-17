@@ -91,6 +91,9 @@
         font-weight: 600
     }
 
+    .bmc-modo-btn{flex:1;padding:7px 4px;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#888;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+    .bmc-modo-btn.active{border-color:#C9A84C;background:#C9A84C18;color:#E8C96A;font-weight:600}
+
     .panel {
         display:none
     }
@@ -533,6 +536,13 @@
                 <input id="l-cf" class="sm ro" inputmode="numeric" readonly>
             </div>
 
+            <div id="l-bmc-modos" style="display:none;margin-bottom:6px">
+                <div style="font-size:11px;color:#666;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Modo de cálculo BMC</div>
+                <div style="display:flex;gap:6px">
+                    <button class="bmc-modo-btn active" id="l-bmc-ea" onclick="lSetBmcModo('ea')">EA anual</button>
+                    <button class="bmc-modo-btn" id="l-bmc-pp" onclick="lSetBmcModo('pp')">Precio pantalla</button>
+                </div>
+            </div>
             <div class="lbl" id="l-tasa-lbl">Tasa real</div>
             <div id="l-bolsa-tasas">
                 <div class="nota">Ingresa tasa EA o mensual — se sincronizan automáticamente</div>
@@ -556,6 +566,11 @@
                 <div class="nota" style="border-left-color:#E8C96A">Calculador inverso — ingresa el valor girado por la bolsa y se calcula la tasa EA exacta</div>
                 <div class="lbl">Valor girado por la bolsa ($)</div>
                 <input id="l-vgiro" inputmode="numeric" placeholder="ej. 2176998029" oninput="calcTasaInversa()">
+            </div>
+            <div id="l-pp-wrap" style="display:none;margin-top:4px">
+                <div class="nota" style="border-left-color:#C9A84C">Ingresa el porcentaje publicado en pantalla de bolsa — VP = Facial × porcentaje</div>
+                <div class="lbl">Porcentaje pantalla (%)</div>
+                <input id="l-pp" inputmode="decimal" placeholder="ej. 92.06" step="0.0001">
             </div>
             <div id="l-conv-tasa" style="display:none">
                 <input id="l-tasa" inputmode="decimal" placeholder="ej. 1.8">
@@ -680,7 +695,19 @@
     };
 
     var bolsaOn = false,
-        gmfOn = false;
+        gmfOn = false,
+        lBmcModo = "ea";
+
+    function lSetBmcModo(m) {
+        lBmcModo = m;
+        document.getElementById("l-bmc-ea").classList.toggle("active", m === "ea");
+        document.getElementById("l-bmc-pp").classList.toggle("active", m === "pp");
+        document.getElementById("l-bolsa-tasas").style.display = m === "ea" ? "block" : "none";
+        document.getElementById("l-inv-wrap").style.display = m === "ea" ? "block" : "none";
+        document.getElementById("l-pp-wrap").style.display = m === "pp" ? "block" : "none";
+        document.getElementById("l-tasa-lbl").textContent = m === "pp" ? "Precio pantalla" : "Tasa real";
+    }
+
     function toggleBolsa() {
         bolsaOn = !bolsaOn;
         document.getElementById("tog-bolsa").classList.toggle("on", bolsaOn);
@@ -857,6 +884,16 @@
             else {
                 cfW.style.display = "none";
                 cfI.value = "";
+            }
+            var modosEl = document.getElementById("l-bmc-modos");
+            var ppEl = document.getElementById("l-pp-wrap");
+            if (f.tipo === "bolsa") {
+                if (modosEl) modosEl.style.display = "block";
+                lSetBmcModo("ea");
+            } else {
+                if (modosEl) modosEl.style.display = "none";
+                if (ppEl) ppEl.style.display = "none";
+                document.getElementById("l-tasa-lbl").style.display = "block";
             }
         }
 
@@ -1084,6 +1121,22 @@
             descBolsa = 0;
 
         if (f.tipo === "bolsa") {
+            if (lBmcModo === "pp") {
+                var ppPct = pn(document.getElementById("l-pp").value);
+                if (isNaN(ppPct) || ppPct <= 0 || ppPct >= 100) {
+                    e.textContent = "Ingresa el porcentaje de pantalla (ej. 92.06).";
+                    e.style.display = "block";
+                    return;
+                }
+                VP = Vf * (ppPct / 100);
+                descBolsa = Vf - VP;
+                bM = VP * 0.002;
+                ibM = bM * 0.19;
+                sM = VP * (scbP / 100);
+                isM = sM * 0.19;
+                intM = 0;
+                tasaLabel = "Precio pantalla " + ppPct.toFixed(4) + "% → VP " + cop(Math.round(VP));
+            } else {
             var tea = pn(document.getElementById("l-tea").value);
             if (isNaN(tea) || tea <= 0) {
                 e.textContent = "Ingresa la tasa EA real.";
@@ -1097,8 +1150,9 @@
             ibM = bM * 0.19;
             sM = VP * (scbP / 100);
             isM = sM * 0.19;
-            intM = 0; // el descuento ya está en VP
+            intM = 0;
             tasaLabel = "EA " + tea.toFixed(2) + "% → período " + (tp * 100).toFixed(4) + "%";
+            }
         } else if (f.tipo === "anual") {
             var ta = pn(document.getElementById("l-tasa").value);
             if (isNaN(ta) || ta <= 0) {
