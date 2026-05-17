@@ -706,6 +706,31 @@
         document.getElementById("l-inv-wrap").style.display = m === "ea" ? "block" : "none";
         document.getElementById("l-pp-wrap").style.display = m === "pp" ? "block" : "none";
         document.getElementById("l-tasa-lbl").textContent = m === "pp" ? "Precio pantalla" : "Tasa real";
+        // Valor de negociación: ocultar en PP (VP se calcula automáticamente)
+        var dNeg = m === "pp" ? "none" : "block";
+        document.getElementById("l-negoc-lbl").style.display = dNeg;
+        document.getElementById("l-negoc").style.display = dNeg;
+        // SCB: editable con valor por defecto 0.40% en PP; restaurar config del fondeador en EA
+        var scbWrap = document.getElementById("l-scb-wrap");
+        var scbIn  = document.getElementById("l-scb");
+        var scbLbl = document.getElementById("l-scb-lbl");
+        if (m === "pp") {
+            scbWrap.style.display = "block";
+            scbIn.value = "0.4";
+            scbIn.readOnly = false;
+            scbIn.className = "sm";
+            scbLbl.innerHTML = "Costo SCB (%)";
+        } else {
+            var fid = document.getElementById("l-fond").value;
+            var f = FONDS[fid];
+            if (f && f.bolsa) {
+                scbWrap.style.display = "block";
+                scbIn.value = String(f.scb);
+                scbIn.readOnly = !f.scbEdit;
+                scbIn.className = f.scbEdit ? "sm" : "sm ro";
+                scbLbl.innerHTML = "Costo SCB (%)" + (!f.scbEdit ? ' <span style="color:#555">fijo</span>' : "");
+            }
+        }
     }
 
     function toggleBolsa() {
@@ -1101,7 +1126,8 @@
         var reteP = pn(document.getElementById("l-rete").value);
         var scbP = pn(document.getElementById("l-scb") ? document.getElementById("l-scb").value : 0) || 0;
         var e = document.getElementById("l-err");
-        if (!fid || isNaN(Vf) || isNaN(Vn) || isNaN(dias) || Vf <= 0 || Vn <= 0 || dias <= 0) {
+        var skipVn = lBmcModo === "pp";
+        if (!fid || isNaN(Vf) || Vf <= 0 || isNaN(dias) || dias <= 0 || (!skipVn && (isNaN(Vn) || Vn <= 0))) {
             e.textContent = "Completa todos los campos.";
             e.style.display = "block";
             document.getElementById("l-result").innerHTML = "";
